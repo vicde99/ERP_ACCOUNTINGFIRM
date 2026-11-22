@@ -1,0 +1,3052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KuwentaPH Enterprise | Multi-Tenant Philippine Accounting & Tax ERP</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#1e1b4b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    /* Print Watermark styling for BIR 2307 & Invoices */
+    .bir-watermark {
+      position: relative;
+    }
+    .bir-watermark::after {
+      content: attr(data-watermark);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-28deg);
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: rgba(79, 70, 229, 0.08);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- Toast Notification Container (Replaces alert) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: SAAS LANDING PAGE (INITIAL VIEW)                              -->
+  <!-- ===================================================================== -->
+  <div id="landing-view" class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+
+    <!-- Sticky SaaS Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <!-- Brand Logo -->
+        <a href="#hero" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-900 via-indigo-700 to-emerald-600 flex items-center justify-center text-white font-bold shadow-md">
+            <i class="fa-solid fa-scale-balanced text-sm"></i>
+          </div>
+          <div>
+            <span class="text-slate-900 font-extrabold tracking-tight text-lg block leading-none">Kuwenta<span class="text-emerald-600">PH</span> <span class="text-xs font-semibold text-indigo-600">Enterprise</span></span>
+            <span class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">PH Accounting Firm ERP & BIR CAS SaaS</span>
+          </div>
+        </a>
+
+        <!-- Desktop Section Links -->
+        <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
+          <a href="#modules" class="hover:text-indigo-600 transition">ERP Modules</a>
+          <a href="#manual-vs-erp" class="hover:text-indigo-600 transition">Manual vs. ERP Advantage</a>
+          <a href="#access-control" class="hover:text-indigo-600 transition">Access Control & Roles</a>
+          <a href="#industries" class="hover:text-indigo-600 transition">Industries</a>
+        </nav>
+
+        <!-- Primary Workspace CTA -->
+        <div class="flex items-center gap-2.5">
+          <button onclick="enterWorkspace('partner')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition">
+            <span>Launch ERP Workspace</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative overflow-hidden bg-slate-900 text-white py-16 lg:py-24 border-b border-slate-800">
+      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#6366f1 1px, transparent 1px); background-size: 24px 24px;"></div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          <!-- Left Hero Copy -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>BIR CAS / CBA Ready • RR No. 6-2026 & ORUS Compliant</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+              The Multi-Tenant ERP Built for <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400">Philippine Accounting Firms</span> & Multi-Industry Clients.
+            </h1>
+
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
+              Manage dozens of Philippine SMEs, corporations, and clinics from one unified cloud ledger. Automate double-entry bookkeeping, RR 6-2026 CWT invoicing, Form 2307 generation, 2550Q/0619-E/2551Q returns, and strict Role-Based Access Restrictions.
+            </p>
+
+            <!-- Hero CTAs -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <button onclick="enterWorkspace('partner')" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg shadow-emerald-900/40 transition flex items-center gap-2">
+                <i class="fa-solid fa-rocket"></i>
+                <span>Open Live ERP Workspace</span>
+              </button>
+              <a href="#modules" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold transition">
+                Explore All 6 Modules
+              </a>
+            </div>
+
+            <!-- Quick Role-Launch Pills -->
+            <div class="pt-4 border-t border-slate-800">
+              <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-2">Instant Workspace Role Test-Drive:</p>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="enterWorkspace('partner')" class="px-3 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-semibold transition">
+                  <i class="fa-solid fa-crown mr-1 text-amber-400"></i> Managing Partner
+                </button>
+                <button onclick="enterWorkspace('senior')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition">
+                  <i class="fa-solid fa-user-check mr-1 text-emerald-400"></i> Senior Tax CPA
+                </button>
+                <button onclick="enterWorkspace('junior')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition">
+                  <i class="fa-solid fa-user-pen mr-1 text-sky-400"></i> Junior Bookkeeper
+                </button>
+                <button onclick="enterWorkspace('client')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition">
+                  <i class="fa-solid fa-eye mr-1 text-rose-400"></i> Client Viewer (Restricted)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Hero Interactive Live Preview Card -->
+          <div class="lg:col-span-5">
+            <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <span class="ml-2 text-xs font-mono text-slate-400">workspace.kuwentaph.com</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">LIVE PREVIEW</span>
+              </div>
+
+              <div class="bg-slate-900/90 rounded-xl p-3.5 border border-slate-700/80 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400">Active Multi-Tenant Entity:</span>
+                  <span class="font-mono text-emerald-400 font-semibold">RDO 044 • VAT Reg</span>
+                </div>
+                <p class="text-sm font-bold text-white">Maharlika Retail & E-Commerce Corp.</p>
+                <p class="text-[11px] font-mono text-slate-400">TIN: 009-482-119-00000 | ORUS-2026-88412</p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-700/60">
+                  <span class="text-slate-400 block text-[11px]">Net VAT Payable (2550Q)</span>
+                  <span class="font-mono font-bold text-base text-white mt-0.5 block">₱31,100.00</span>
+                  <span class="text-[10px] text-emerald-400">Auto-computed from Books</span>
+                </div>
+                <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-700/60">
+                  <span class="text-slate-400 block text-[11px]">RR 6-2026 Form 2307</span>
+                  <span class="font-mono font-bold text-base text-indigo-300 mt-0.5 block">WC158 / WC160</span>
+                  <span class="text-[10px] text-amber-300">1-Click PDF & Watermark</span>
+                </div>
+              </div>
+
+              <div class="bg-indigo-950/60 border border-indigo-500/30 rounded-xl p-3 flex items-center justify-between">
+                <div class="text-xs">
+                  <p class="font-bold text-indigo-200">5 Philippine Industries Pre-Loaded</p>
+                  <p class="text-[11px] text-indigo-300/80">Retail, Construction, F&B, IT/BPO & Clinics</p>
+                </div>
+                <button onclick="enterWorkspace('partner')" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">
+                  Enter App &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Comprehensive ERP Modules & Sub-Modules Breakdown -->
+    <section id="modules" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div class="text-center max-w-3xl mx-auto space-y-2">
+        <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider">Complete SaaS Architecture</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">All ERP Modules & Sub-Modules Under KuwentaPH</h2>
+        <p class="text-sm text-slate-600">Every module is engineered specifically around Philippine National Internal Revenue Code (NIRC) rules, BIR Computerized Accounting System (CAS) standards, and multi-client firm workflows.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Module 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-building-user"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">1. Multi-Tenant Client & Entity Hub</h3>
+            <p class="text-xs text-slate-500 mt-1">Centralized practice management for CPA firms handling multiple corporations and sole proprietors.</p>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>14-Digit TIN, RDO Code & ORUS Registration Tracking</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>VAT (12%), Zero-Rated (PEZA/BOI) & Non-VAT (3%) Regimes</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Industry-Specific Chart of Accounts (COA) Provisioning</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Cross-Client Compliance & Filing Status Matrix</span></li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner', 'dashboard')" class="mt-5 pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between">
+            <span>Open Client Hub in Workspace</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">2. Bookkeeping & BIR Books of Accounts</h3>
+            <p class="text-xs text-slate-500 mt-1">Real-time double-entry accounting engine replacing manual columnar books and spreadsheets.</p>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Journal Voucher Encoder with strict <code class="font-mono bg-slate-100 px-1 rounded">Debit = Credit</code> check</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>6 Statutory Books: General Journal, GL, CRB, CDB, SJ & PJ</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Line-Level Philippine ATC Tagging (<code class="font-mono">WC158</code>, <code class="font-mono">WC160</code>, <code class="font-mono">WI010</code>)</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>1-Click BIR Loose-Leaf / CAS CSV Ledger Export</span></li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner', 'ledger')" class="mt-5 pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between">
+            <span>Open General Ledger in Workspace</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">3. RR 6-2026 Invoicing & Form 2307</h3>
+            <p class="text-xs text-slate-500 mt-1">Compliant billing & accounts payable with automated withholding tax certificates.</p>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Separate CWT/EWT Line-Item Isolation per RR No. 6-2026</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Automated <strong>ORIGINAL</strong> vs. <strong>REPRINT #N</strong> Watermarks</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Instant Printable <strong>BIR Form No. 2307</strong> Certificate Generator</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Auto-Posting to Sales/Purchase Journals & AR/AP Ledgers</span></li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner', 'invoicing')" class="mt-5 pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between">
+            <span>Open Invoicing & 2307 Engine</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Module 4 -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-landmark"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">4. Philippine Tax Engine & Relief SLSP</h3>
+            <p class="text-xs text-slate-500 mt-1">Zero-retyping tax return computation directly from posted general ledger entries.</p>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>BIR Form 2550Q</strong> (Output VAT vs. Input VAT Reconciliation)</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>BIR Form 0619-E & 1601-EQ</strong> (ATC Breakdown & QAP)</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>BIR Form 2551Q</strong> (3% Quarterly Percentage Tax for Non-VAT)</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>SLSP & SAWT</strong> Relief Schedules & <code class="font-mono">.DAT</code> File Exports</span></li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner', 'tax')" class="mt-5 pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between">
+            <span>Open BIR Tax Engine</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Module 5 -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-industry"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">5. Industry-Specific Operational Suites</h3>
+            <p class="text-xs text-slate-500 mt-1">Specialized sub-ledgers tailored to 5 major Philippine business sectors.</p>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>Retail/E-Com:</strong> Shopee/Lazada 1% CWT & SKU Valuation</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>Construction:</strong> Progress Billing, 10% Retention & Subcon EWT</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span><strong>F&B / IT-BPO / Clinics:</strong> POS Z-Read, PEZA 0% FX & HMO/PF</span></li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner', 'industry')" class="mt-5 pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between">
+            <span>Explore Industry Sub-Modules</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Module 6 -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">6. BIR CAS Audit Trail & RBAC Security</h3>
+            <p class="text-xs text-slate-500 mt-1">Enterprise governance satisfying BIR RMO No. 9-2021 system inspection rules.</p>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>4-Tier Role-Based Access Control (Partner, Senior, Junior, Client)</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Immutable Append-Only System Activity & Reprint Logs</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>1-Click BIR CAS Annex C-1 Inspection Package Generator</span></li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner', 'audit')" class="mt-5 pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-between">
+            <span>Inspect Audit & RBAC Controls</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Advantage Over Manual Bookkeeping Section -->
+    <section id="manual-vs-erp" class="py-16 bg-white border-y border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider">Why Upgrade From Spreadsheets</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">KuwentaPH ERP vs. Manual Bookkeeping</h2>
+          <p class="text-sm text-slate-600">Eliminate BIR LOA (Letter of Authority) audit exposures, broken Excel VLOOKUPs, and month-end overtime bottlenecks.</p>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                <th class="py-4 px-5 w-1/4">Accounting & Tax Dimension</th>
+                <th class="py-4 px-5 w-3/8 bg-rose-950/60 text-rose-200"><i class="fa-solid fa-xmark mr-1.5"></i> Traditional Manual / Excel Bookkeeping</th>
+                <th class="py-4 px-5 w-3/8 bg-emerald-950/60 text-emerald-200"><i class="fa-solid fa-check mr-1.5"></i> KuwentaPH Enterprise ERP SaaS</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
+              <tr class="hover:bg-slate-50">
+                <td class="py-4 px-5 font-bold text-slate-900">BIR Form 2307 & RR 6-2026 CWT</td>
+                <td class="py-4 px-5 text-slate-600">Manually typed per supplier in Word/Excel; prone to wrong ATC rates, TIN typos, and missing separate CWT line items on invoices.</td>
+                <td class="py-4 px-5 text-slate-800 font-medium bg-emerald-50/30">Auto-computes CWT (<code class="font-mono text-xs">WC158/WC160/WI010</code>) as a distinct RR 6-2026 line item and generates printable BIR 2307s in 1 click.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-4 px-5 font-bold text-slate-900">2550Q, 0619-E, 2551Q & SLSP</td>
+                <td class="py-4 px-5 text-slate-600">3–5 days of manual filtering, copy-pasting into BIR Relief Data Entry, and reconciling Output vs. Input VAT discrepancies.</td>
+                <td class="py-4 px-5 text-slate-800 font-medium bg-emerald-50/30">Real-time tax aggregation straight from journal postings with instant SLSP/SAWT schedules and eBIRForms <code class="font-mono text-xs">.DAT</code> exports.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-4 px-5 font-bold text-slate-900">Double-Entry & Period Integrity</td>
+                <td class="py-4 px-5 text-slate-600">Unbalanced journal sheets, accidental formula overwrites, and silent edits to prior-quarter closed books.</td>
+                <td class="py-4 px-5 text-slate-800 font-medium bg-emerald-50/30">Enforced <code class="font-mono text-xs">Debit = Credit</code> posting rules, locked closed periods, and an immutable BIR CAS/CBA audit trail.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-4 px-5 font-bold text-slate-900">CPA Firm Scalability</td>
+                <td class="py-4 px-5 text-slate-600">1 junior bookkeeper struggles to handle 5–8 clients across fragmented folders and USB drives.</td>
+                <td class="py-4 px-5 text-slate-800 font-medium bg-emerald-50/30">1 accountant manages 30+ multi-industry clients via instant multi-tenant entity switching and industry COA templates.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-4 px-5 font-bold text-slate-900">Data Security & Staff Access</td>
+                <td class="py-4 px-5 text-slate-600">Unprotected spreadsheets; junior staff or external clients can accidentally alter tax filings or view confidential ledgers.</td>
+                <td class="py-4 px-5 text-slate-800 font-medium bg-emerald-50/30">Granular 4-tier Role-Based Access Control (RBAC) restricting tax approvals, entity creation, and client visibility.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Access Restriction & Role-Based Permission Matrix Section -->
+    <section id="access-control" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div class="text-center max-w-3xl mx-auto space-y-2">
+        <span class="px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-bold uppercase tracking-wider">Enterprise Governance & RBAC</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Granular User Access Restrictions</h2>
+        <p class="text-sm text-slate-600">Protect sensitive client TINs, tax filings, and closed books. Click any role below to launch the live ERP Workspace with that exact permission profile enforced.</p>
+      </div>
+
+      <!-- 4 Role Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- Role 1: Managing Partner -->
+        <div class="bg-white rounded-2xl border-2 border-indigo-600 p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-[11px] font-bold">FULL ACCESS</span>
+              <i class="fa-solid fa-crown text-amber-500"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">Managing Partner / CPA Admin</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Atty./CPA Maria Santos</p>
+            <ul class="mt-4 space-y-2 text-xs">
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> All Client Entities & Onboarding</li>
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Post & Approve Journal Vouchers</li>
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Approve & File BIR Tax Returns</li>
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Full CAS Audit Trail & RBAC Admin</li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('partner')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+            Launch as Managing Partner &rarr;
+          </button>
+        </div>
+
+        <!-- Role 2: Senior Tax Accountant -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-bold">TAX & GL REVIEW</span>
+              <i class="fa-solid fa-user-check text-emerald-600"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">Senior Tax Accountant</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Carlo Reyes, CPA</p>
+            <ul class="mt-4 space-y-2 text-xs">
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Post JVs, Invoices & Form 2307</li>
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Approve 2550Q / 0619-E / SLSP</li>
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> View BIR CAS Audit Trail</li>
+              <li class="text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Restricted: Onboard/Delete Clients</li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('senior')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+            Launch as Senior Tax CPA &rarr;
+          </button>
+        </div>
+
+        <!-- Role 3: Junior Bookkeeper -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 text-[11px] font-bold">DATA ENTRY ONLY</span>
+              <i class="fa-solid fa-user-pen text-amber-600"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">Junior Bookkeeper</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Bea Mendoza</p>
+            <ul class="mt-4 space-y-2 text-xs">
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Encode JVs & Issue Invoices</li>
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Manage Industry Ops Sub-Ledgers</li>
+              <li class="text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Restricted: Approve/Export Tax .DAT</li>
+              <li class="text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Restricted: CAS Audit Trail & Admin</li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('junior')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+            Launch as Junior Bookkeeper &rarr;
+          </button>
+        </div>
+
+        <!-- Role 4: Client Portal Viewer -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 text-[11px] font-bold">SINGLE ENTITY READ-ONLY</span>
+              <i class="fa-solid fa-eye text-rose-600"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">Client Portal Viewer</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Marco Tan (Maharlika Retail)</p>
+            <ul class="mt-4 space-y-2 text-xs">
+              <li class="text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> View Own Dashboard & Form 2307s</li>
+              <li class="text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Locked to Assigned Entity Only</li>
+              <li class="text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Restricted: Post JVs or Create Bills</li>
+              <li class="text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Restricted: Tax Filing & Audit Logs</li>
+            </ul>
+          </div>
+          <button onclick="enterWorkspace('client')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+            Launch as Client Viewer &rarr;
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Supported Philippine Industries Strip -->
+    <section id="industries" class="py-12 bg-slate-900 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-6">
+        <div>
+          <h3 class="text-lg font-bold">Pre-Configured for 5 Major Philippine Industries</h3>
+          <p class="text-xs text-slate-400 mt-1">Switch between live pre-loaded entities inside the workspace to see industry COAs and tax rules adapt automatically.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700"><i class="fa-solid fa-cart-shopping text-indigo-400 mr-1.5"></i>Retail & E-Commerce</span>
+          <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700"><i class="fa-solid fa-helmet-safety text-amber-400 mr-1.5"></i>Construction & Real Estate</span>
+          <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700"><i class="fa-solid fa-utensils text-emerald-400 mr-1.5"></i>Food & Hospitality</span>
+          <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700"><i class="fa-solid fa-laptop-code text-sky-400 mr-1.5"></i>IT / BPO & PEZA Export</span>
+          <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700"><i class="fa-solid fa-stethoscope text-rose-400 mr-1.5"></i>Healthcare & Clinics</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-400 py-8 border-t border-slate-800 text-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+        <p><strong class="text-white">KuwentaPH Enterprise</strong> — Philippine Accounting Firm ERP & BIR CAS/CBA SaaS Platform.</p>
+        <button onclick="enterWorkspace('partner')" class="text-emerald-400 hover:text-emerald-300 font-bold">
+          Launch Interactive ERP Workspace &rarr;
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: MAIN ERP WORKSPACE APPLICATION (INITIALLY HIDDEN)             -->
+  <!-- ===================================================================== -->
+  <div id="workspace-view" class="hidden min-h-screen flex flex-col lg:flex-row">
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 text-slate-300 transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0 transition-transform duration-200 ease-in-out flex flex-col justify-between border-r border-slate-800">
+      <div>
+        <!-- Firm Brand Header -->
+        <div class="h-16 flex items-center justify-between px-5 bg-slate-950/60 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
+              <i class="fa-solid fa-scale-balanced text-sm"></i>
+            </div>
+            <div>
+              <span class="text-white font-bold tracking-tight text-base block leading-none">Kuwenta<span class="text-emerald-400">PH</span></span>
+              <span class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">CPA Firm ERP Cloud</span>
+            </div>
+          </div>
+          <button id="close-sidebar-btn" class="lg:hidden text-slate-400 hover:text-white p-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Back to SaaS Landing Page Link -->
+        <div class="px-3 pt-3">
+          <button onclick="showLandingPage()" class="w-full py-2 px-3 rounded-xl bg-slate-800/90 hover:bg-indigo-600 text-slate-200 hover:text-white text-xs font-semibold flex items-center justify-between transition border border-slate-700/80">
+            <span><i class="fa-solid fa-arrow-left mr-1.5"></i> Back to SaaS Overview</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900/70 text-slate-300">Home</span>
+          </button>
+        </div>
+
+        <!-- Firm Partner Info -->
+        <div class="px-5 py-3 mt-2 bg-slate-800/40 border-y border-slate-800/80">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold text-white">Reyes, Santos & Co., CPAs</p>
+              <p class="text-[11px] text-slate-400">BOA Acc. No. 0842 • Multi-Tenant Practice</p>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              PRO
+            </span>
+          </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-3 space-y-1">
+          <p class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Practice & Ledger</p>
+          <button onclick="switchTab('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-600 text-white shadow-sm">
+            <span class="flex items-center gap-3"><i class="fa-solid fa-chart-pie w-5 text-center"></i><span>Executive Dashboard</span></span>
+          </button>
+          <button onclick="switchTab('ledger')" data-nav="ledger" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
+            <span class="flex items-center gap-3"><i class="fa-solid fa-book-open w-5 text-center"></i><span>Books & General Ledger</span></span>
+            <span id="lock-nav-ledger" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300"><i class="fa-solid fa-lock"></i></span>
+          </button>
+          <button onclick="switchTab('invoicing')" data-nav="invoicing" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
+            <span class="flex items-center gap-3"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i><span>Invoicing, AR/AP & 2307</span></span>
+          </button>
+
+          <p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Philippine Tax & Ops</p>
+          <button onclick="switchTab('tax')" data-nav="tax" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
+            <span class="flex items-center gap-3"><i class="fa-solid fa-landmark w-5 text-center"></i><span>BIR Tax Engine & SLSP</span></span>
+            <span id="lock-nav-tax" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300"><i class="fa-solid fa-lock"></i></span>
+          </button>
+          <button onclick="switchTab('industry')" data-nav="industry" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
+            <span class="flex items-center gap-3"><i class="fa-solid fa-industry w-5 text-center"></i><span id="nav-industry-label">Industry Operations</span></span>
+            <span id="lock-nav-industry" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300"><i class="fa-solid fa-lock"></i></span>
+          </button>
+          <button onclick="switchTab('audit')" data-nav="audit" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
+            <span class="flex items-center gap-3"><i class="fa-solid fa-shield-halved w-5 text-center"></i><span>CAS Audit & Access RBAC</span></span>
+            <span id="lock-nav-audit" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300"><i class="fa-solid fa-lock"></i></span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Bottom System Actions -->
+      <div class="p-4 border-t border-slate-800 space-y-2.5 bg-slate-950/40">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Active Role:</span>
+          <span id="sidebar-role-label" class="text-emerald-400 font-semibold">Managing Partner</span>
+        </div>
+        <button onclick="resetDemoData()" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition border border-slate-700">
+          <i class="fa-solid fa-rotate-left"></i> Reset Demo Workspace
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- Sticky Top Bar: Multi-Tenant Client Switcher + Active User Role Switcher -->
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-4 lg:px-8 py-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          
+          <!-- Left: Mobile Menu Toggle + Multi-Tenant Client Switcher -->
+          <div class="flex items-center gap-3 flex-1 min-w-[260px]">
+            <button id="open-sidebar-btn" class="lg:hidden p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Client Switcher Dropdown -->
+            <div class="relative flex-1 max-w-md">
+              <label for="client-switcher" class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-indigo-600 mb-0.5">
+                <span>Active Client Entity (Multi-Tenant Switcher)</span>
+                <span id="client-lock-indicator" class="hidden text-rose-600"><i class="fa-solid fa-lock"></i> Locked to Assigned Client</span>
+              </label>
+              <div class="relative">
+                <select id="client-switcher" onchange="handleClientSwitch(this.value)" class="w-full appearance-none bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-900 text-sm font-semibold rounded-xl pl-3.5 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                  <!-- Populated via JS -->
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                  <i class="fa-solid fa-chevron-down text-xs"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Add New Client Button (Restricted by Role) -->
+            <button id="btn-new-client" onclick="openNewClientModal()" class="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition shrink-0">
+              <i class="fa-solid fa-plus"></i>
+              <span class="hidden sm:inline">New Client</span>
+            </button>
+          </div>
+
+          <!-- Right: Live Role-Based Access Switcher + BIR Status -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            
+            <!-- Active User & Role Switcher -->
+            <div class="bg-slate-900 text-white rounded-xl px-3 py-1.5 flex items-center gap-2 border border-slate-700 shadow-sm">
+              <i class="fa-solid fa-user-shield text-emerald-400 text-xs"></i>
+              <div class="flex flex-col">
+                <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold leading-none">Active User Role (RBAC)</span>
+                <select id="role-switcher" onchange="switchUserRole(this.value)" class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer pr-1 mt-0.5">
+                  <option value="partner" class="text-slate-900">Atty./CPA Maria Santos (Managing Partner)</option>
+                  <option value="senior" class="text-slate-900">Carlo Reyes, CPA (Senior Tax Accountant)</option>
+                  <option value="junior" class="text-slate-900">Bea Mendoza (Junior Bookkeeper)</option>
+                  <option value="client" class="text-slate-900">Marco Tan (Client Viewer - Restricted)</option>
+                </select>
+              </div>
+            </div>
+
+            <span id="header-tax-regime" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <i class="fa-solid fa-receipt text-[11px]"></i> VAT-Registered
+            </span>
+
+            <button onclick="switchTab('audit')" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>BIR CAS Ready</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Role Restriction Alert Banner (Dynamically shown when non-partner role is active) -->
+        <div id="role-restriction-banner" class="hidden mt-2.5 px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200 flex flex-wrap items-center justify-between gap-2 text-xs text-amber-900">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-shield-exclamation text-amber-600"></i>
+            <span id="role-restriction-text" class="font-medium">Role Restriction Active</span>
+          </div>
+          <button onclick="switchTab('audit')" class="text-xs font-bold text-amber-800 underline hover:text-amber-950">View Permission Matrix &rarr;</button>
+        </div>
+
+        <!-- Client Context Sub-Banner -->
+        <div class="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span><strong class="text-slate-700">TIN:</strong> <span id="header-tin" class="font-mono text-slate-800">009-482-119-00000</span></span>
+            <span><strong class="text-slate-700">Industry:</strong> <span id="sub-industry">Retail / E-Commerce</span></span>
+            <span><strong class="text-slate-700">RDO:</strong> <span id="sub-rdo-full">044 - Taguig / Pateros</span></span>
+            <span><strong class="text-slate-700">ORUS Reg:</strong> <span id="sub-orus" class="font-mono text-emerald-700 font-medium">ORUS-2026-88412</span></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1 text-slate-600"><i class="fa-solid fa-lock text-emerald-600"></i> Immutable Audit Log ON</span>
+            <span class="inline-flex items-center gap-1 text-slate-600"><i class="fa-solid fa-file-shield text-indigo-600"></i> RR 6-2026 E-Invoicing</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dynamic Viewport Container -->
+      <main class="flex-1 p-4 lg:p-8 max-w-[1600px] w-full mx-auto space-y-6">
+
+        <!-- ===================================================================== -->
+        <!-- TAB 1: FIRM & CLIENT EXECUTIVE DASHBOARD                              -->
+        <!-- ===================================================================== -->
+        <section id="tab-dashboard" class="tab-panel space-y-6">
+          
+          <!-- KPI Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <!-- Gross Revenue -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Gross Revenue (YTD)</span>
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <i class="fa-solid fa-peso-sign"></i>
+                </div>
+              </div>
+              <p id="kpi-revenue" class="mt-3 text-2xl font-bold text-slate-900 tabular-nums">₱0.00</p>
+              <div class="mt-2 flex items-center gap-1.5 text-xs">
+                <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> Live Ledger</span>
+                <span class="text-slate-400">• Exclusive of 12% VAT</span>
+              </div>
+            </div>
+
+            <!-- Net VAT / Percentage Tax Payable -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition">
+              <div class="flex items-center justify-between">
+                <span id="kpi-vat-label" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Net VAT Payable (2550Q)</span>
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <i class="fa-solid fa-percent"></i>
+                </div>
+              </div>
+              <p id="kpi-vat" class="mt-3 text-2xl font-bold text-slate-900 tabular-nums">₱0.00</p>
+              <div id="kpi-vat-sub" class="mt-2 text-xs text-slate-500 tabular-nums">
+                Output: ₱0.00 | Input: ₱0.00
+              </div>
+            </div>
+
+            <!-- Withholding Tax Remittance -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">EWT Remittance (0619-E)</span>
+                <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <i class="fa-solid fa-building-columns"></i>
+                </div>
+              </div>
+              <p id="kpi-ewt" class="mt-3 text-2xl font-bold text-slate-900 tabular-nums">₱0.00</p>
+              <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
+                <span>Withheld from Suppliers</span>
+                <span id="kpi-cwt-receivable" class="text-indigo-600 font-medium">CWT Asset: ₱0</span>
+              </div>
+            </div>
+
+            <!-- Net Income -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Net Operating Income</span>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+              </div>
+              <p id="kpi-net-income" class="mt-3 text-2xl font-bold text-emerald-700 tabular-nums">₱0.00</p>
+              <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                <span>Pre-Income Tax (1702Q/1701Q)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart + BIR Tax Filing Calendar Grid -->
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            
+            <!-- Left 7 Cols: Cash Flow & Tax Liability Chart -->
+            <div class="xl:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 flex flex-col justify-between">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div>
+                  <h2 class="text-base font-bold text-slate-900">Revenue, Operating Expenses & Tax Liability Trend</h2>
+                  <p class="text-xs text-slate-500">Monthly financial performance & BIR statutory accruals (FY 2026)</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="switchTab('ledger')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                    + Record Entry
+                  </button>
+                  <button onclick="switchTab('invoicing')" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition">
+                    + Issue Invoice
+                  </button>
+                </div>
+              </div>
+              <div class="relative h-72 w-full">
+                <canvas id="financialChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Right 5 Cols: Upcoming BIR Tax Filing Calendar -->
+            <div class="xl:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h2 class="text-base font-bold text-slate-900">BIR Statutory Filing Calendar</h2>
+                  <p class="text-xs text-slate-500">Click status badge to cycle eFPS / eBIRForms workflow</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">Q4 2026</span>
+              </div>
+
+              <div id="bir-calendar-list" class="space-y-3 overflow-y-auto max-h-72 pr-1">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Multi-Client Practice Portfolio Overview (CPA Firm View) -->
+          <div id="practice-matrix-card" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">CPA Practice Multi-Tenant Client Matrix</h2>
+                <p class="text-xs text-slate-500">Cross-client compliance & bookkeeping status across all managed entities</p>
+              </div>
+              <button onclick="openNewClientModal()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                + Onboard Client Entity &rarr;
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-3">Client Entity</th>
+                    <th class="py-3 px-3">TIN & RDO</th>
+                    <th class="py-3 px-3">Industry</th>
+                    <th class="py-3 px-3">Tax Regime</th>
+                    <th class="py-3 px-3 text-right">YTD Revenue</th>
+                    <th class="py-3 px-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="practice-matrix-body" class="divide-y divide-slate-100 text-sm">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 2: BOOKKEEPING & GENERAL LEDGER (BIR BOOKS OF ACCOUNTS)           -->
+        <!-- ===================================================================== -->
+        <section id="tab-ledger" class="tab-panel hidden space-y-6">
+          
+          <!-- Journal Entry Creator Card -->
+          <div id="je-creator-card" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">BIR-Compliant Double-Entry Journal Voucher</h2>
+                <p class="text-xs text-slate-500">Real-time Debit = Credit validation with Philippine ATC & VAT classification</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="je-balance-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <i class="fa-solid fa-check-circle"></i> Balanced (₱0.00 diff)
+                </span>
+              </div>
+            </div>
+
+            <form id="journal-form" onsubmit="submitJournalEntry(event)" class="mt-4 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Posting Date</label>
+                  <input type="date" id="je-date" required value="2026-11-21" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Book of Account</label>
+                  <select id="je-book" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="General Journal">General Journal (GJ)</option>
+                    <option value="Cash Receipts Book">Cash Receipts Book (CRB)</option>
+                    <option value="Cash Disbursements Book">Cash Disbursements Book (CDB)</option>
+                    <option value="Sales Journal">Sales Journal (SJ)</option>
+                    <option value="Purchase Journal">Purchase Journal (PJ)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Counterparty / Payee</label>
+                  <input type="text" id="je-party" required placeholder="e.g., Meralco / Ayala Land / Client" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Particulars / Memo</label>
+                  <input type="text" id="je-memo" required placeholder="e.g., Nov 2026 Office Lease & EWT" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+              </div>
+
+              <!-- Journal Lines Table -->
+              <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse">
+                  <thead class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3 w-1/3">Account Title (Industry COA)</th>
+                      <th class="py-2.5 px-3 w-1/4">ATC / Tax Code</th>
+                      <th class="py-2.5 px-3 text-right">Debit (₱)</th>
+                      <th class="py-2.5 px-3 text-right">Credit (₱)</th>
+                      <th class="py-2.5 px-3 text-center w-12"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="je-lines-container" class="divide-y divide-slate-100 text-sm">
+                    <!-- Dynamic Journal Lines -->
+                  </tbody>
+                  <tfoot class="bg-slate-50/80 font-semibold text-sm border-t border-slate-200">
+                    <tr>
+                      <td colspan="2" class="py-2.5 px-3">
+                        <button type="button" onclick="addJournalLine()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                          <i class="fa-solid fa-plus-circle"></i> Add Account Line
+                        </button>
+                      </td>
+                      <td id="je-total-debit" class="py-2.5 px-3 text-right font-mono tabular-nums text-slate-900">₱0.00</td>
+                      <td id="je-total-credit" class="py-2.5 px-3 text-right font-mono tabular-nums text-slate-900">₱0.00</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div class="flex justify-end gap-3">
+                <button type="button" onclick="resetJournalLines()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50">
+                  Clear Lines
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
+                  <i class="fa-solid fa-lock mr-1.5"></i> Post to BIR Books
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tabbed BIR Books of Accounts Viewer -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">BIR Registered Books of Accounts</h2>
+                <p class="text-xs text-slate-500">Filter by statutory book, search particulars, or export audit-ready CSV</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <input type="text" id="book-search" oninput="renderBooksTable()" placeholder="Search ref, account, party..." class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                <button onclick="exportBooksCSV()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                  <i class="fa-solid fa-file-csv"></i> Export CSV
+                </button>
+              </div>
+            </div>
+
+            <!-- Book Tabs -->
+            <div class="flex flex-wrap gap-1.5 border-b border-slate-200 pb-3" id="book-tabs">
+              <button onclick="setBookFilter('ALL')" data-book="ALL" class="book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">General Ledger (All)</button>
+              <button onclick="setBookFilter('General Journal')" data-book="General Journal" class="book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">General Journal</button>
+              <button onclick="setBookFilter('Cash Receipts Book')" data-book="Cash Receipts Book" class="book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Cash Receipts Book</button>
+              <button onclick="setBookFilter('Cash Disbursements Book')" data-book="Cash Disbursements Book" class="book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Cash Disbursements Book</button>
+              <button onclick="setBookFilter('Sales Journal')" data-book="Sales Journal" class="book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Sales Journal</button>
+              <button onclick="setBookFilter('Purchase Journal')" data-book="Purchase Journal" class="book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Purchase Journal</button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-3">Date & Ref #</th>
+                    <th class="py-3 px-3">Book</th>
+                    <th class="py-3 px-3">Account Title</th>
+                    <th class="py-3 px-3">Counterparty & Particulars</th>
+                    <th class="py-3 px-3">ATC</th>
+                    <th class="py-3 px-3 text-right">Debit (₱)</th>
+                    <th class="py-3 px-3 text-right">Credit (₱)</th>
+                  </tr>
+                </thead>
+                <tbody id="books-table-body" class="divide-y divide-slate-100 text-xs">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 3: INVOICING, AR/AP & E-INVOICING (RR 6-2026 & RMC 98-2026)       -->
+        <!-- ===================================================================== -->
+        <section id="tab-invoicing" class="tab-panel hidden space-y-6">
+          
+          <!-- RR 6-2026 Compliance Info Banner -->
+          <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-file-contract"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-indigo-950">BIR RR No. 6-2026 & RMC No. 98-2026 Compliant Billing Engine</h3>
+                <p class="text-xs text-indigo-800 mt-0.5">
+                  Automatically isolates <strong>Creditable Withholding Tax (CWT)</strong> as a distinct line item on Sales Invoices & Purchase Bills, tracks <strong>ORIGINAL vs. REPRINT</strong> watermarks, and generates downloadable <strong>BIR Form 2307</strong> certificates.
+                </p>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-lg bg-white text-indigo-700 font-mono text-xs font-semibold border border-indigo-200">
+              PTI-2026-CAS-0091
+            </span>
+          </div>
+
+          <!-- Create Invoice / Purchase Bill Form -->
+          <div id="invoice-creator-card" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <h2 class="text-base font-bold text-slate-900 mb-4">Issue Sales Invoice or Record Supplier Purchase Bill</h2>
+            <form id="invoice-form" onsubmit="createDocument(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Document Type</label>
+                <select id="inv-type" onchange="recalcInvoicePreview()" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="SALES_INVOICE">Sales Invoice (AR / Output VAT)</option>
+                  <option value="PURCHASE_BILL">Supplier Purchase Bill (AP / Input VAT)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Customer / Supplier Name</label>
+                <input type="text" id="inv-party" required placeholder="e.g., SM Retail Inc. / Globe Telecom" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Counterparty TIN (14-Digit)</label>
+                <input type="text" id="inv-tin" required value="000-451-892-00000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Date Issued</label>
+                <input type="date" id="inv-date" required value="2026-11-21" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Description of Goods / Services</label>
+                <input type="text" id="inv-desc" required placeholder="e.g., Enterprise Retainer / Inventory Supply" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Base Amount (Net of VAT, ₱)</label>
+                <input type="number" id="inv-base" required min="1" step="0.01" value="50000" oninput="recalcInvoicePreview()" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">VAT Treatment</label>
+                <select id="inv-vat-type" onchange="recalcInvoicePreview()" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="VATABLE">12% Vatable Sale / Purchase</option>
+                  <option value="ZERO_RATED">0% Zero-Rated (Export / PEZA)</option>
+                  <option value="EXEMPT">VAT-Exempt / Non-VAT</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Withholding Tax ATC (RR 6-2026 Line Item)</label>
+                <select id="inv-atc" onchange="recalcInvoicePreview()" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="NONE|0">None (0% Withholding)</option>
+                  <option value="WC158|0.01">WC158 - Top Withholding Agent: Goods (1%)</option>
+                  <option value="WC160|0.02" selected>WC160 - Top Withholding Agent: Services (2%)</option>
+                  <option value="WC100|0.05">WC100 - Commercial Rental / Lease (5%)</option>
+                  <option value="WI010|0.10">WI010 - Professional / Management Fees (10%)</option>
+                </select>
+              </div>
+
+              <!-- Live Computation Box -->
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-center text-xs space-y-1">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">12% VAT Amount:</span>
+                  <span id="prev-vat" class="font-mono font-semibold text-slate-800">₱6,000.00</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Less: CWT/EWT (Separate Line):</span>
+                  <span id="prev-ewt" class="font-mono font-semibold text-rose-600">-₱1,000.00</span>
+                </div>
+                <div class="flex justify-between pt-1 border-t border-slate-200 font-bold text-indigo-700">
+                  <span>Net Cash Collectible/Payable:</span>
+                  <span id="prev-net" class="font-mono">₱55,000.00</span>
+                </div>
+              </div>
+
+              <div class="md:col-span-2 lg:col-span-3 flex justify-end">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
+                  <i class="fa-solid fa-paper-plane mr-1.5"></i> Issue Document & Auto-Post Ledger
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Issued Invoices & Purchase Bills Ledger -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">E-Invoicing & AR/AP Register</h2>
+                <p class="text-xs text-slate-500">Includes BIR Reprint Counter & One-Click Form 2307 Certificate Generator</p>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-3">Doc # & Status</th>
+                    <th class="py-3 px-3">Type</th>
+                    <th class="py-3 px-3">Counterparty & TIN</th>
+                    <th class="py-3 px-3 text-right">Base Amount</th>
+                    <th class="py-3 px-3 text-right">12% VAT</th>
+                    <th class="py-3 px-3 text-right">CWT/EWT (ATC)</th>
+                    <th class="py-3 px-3 text-right">Net Total</th>
+                    <th class="py-3 px-3 text-center">BIR Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="invoices-table-body" class="divide-y divide-slate-100 text-xs">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 6: BIR CAS / CBA AUDIT TRAIL & USER ACCESS CONTROL (RBAC)         -->
+        <!-- ===================================================================== -->
+        <section id="tab-audit" class="tab-panel hidden space-y-6">
+          
+          <!-- Role-Based Access Control (RBAC) Live Permission Matrix -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold">ROLE-BASED ACCESS CONTROL (RBAC)</span>
+                <h2 class="text-base font-bold text-slate-900 mt-1">Firm & Client User Access Restriction Matrix</h2>
+                <p class="text-xs text-slate-500">Switch the active role in the top header bar to test live UI & action enforcement across modules.</p>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <button onclick="switchUserRole('partner')" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-xs font-semibold">Partner</button>
+                <button onclick="switchUserRole('senior')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Senior CPA</button>
+                <button onclick="switchUserRole('junior')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Junior Bookkeeper</button>
+                <button onclick="switchUserRole('client')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Client Viewer</button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-3 px-3">ERP Module / Action</th>
+                    <th class="py-3 px-3 text-center">Managing Partner</th>
+                    <th class="py-3 px-3 text-center">Senior Tax CPA</th>
+                    <th class="py-3 px-3 text-center">Junior Bookkeeper</th>
+                    <th class="py-3 px-3 text-center">Client Viewer</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">Multi-Tenant Client Switcher (All Entities)</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Assigned Only</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">Onboard / Create New Client Entity</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">Encode Journal Vouchers & Issue Invoices</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Read-Only</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">Approve Tax Returns & Export BIR .DAT / CSV</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">Inspect BIR CAS Audit Trail & Annex C-1</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Allowed</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                    <td class="py-2.5 px-3 text-center text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Restricted</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CAS Readiness Overview Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                  <i class="fa-solid fa-certificate"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold uppercase text-slate-400">BIR RMO 9-2021 / RR 6-2026</p>
+                  <p class="text-sm font-bold text-slate-900">CAS / CBA Compliant Architecture</p>
+                </div>
+              </div>
+              <p class="mt-3 text-xs text-slate-600">Sequential document numbering, tamper-evident hash logs, and strict ORIGINAL vs. REPRINT watermark enforcement active.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                  <i class="fa-solid fa-server"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold uppercase text-slate-400">BIR ORUS Registration</p>
+                  <p id="audit-orus-id" class="text-sm font-bold font-mono text-slate-900">ORUS-2026-88412</p>
+                </div>
+              </div>
+              <p class="mt-3 text-xs text-slate-600">Online Registration and Update System (ORUS) acknowledgment certificate linked to client's RDO Books of Accounts.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase text-slate-400">BIR Inspection Package</p>
+                <p class="text-sm font-bold text-slate-900 mt-0.5">CAS Annex C-1 & System Audit Log</p>
+              </div>
+              <button onclick="downloadCASAnnexSample()" class="mt-3 w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-file-shield"></i> Download CAS Annex C-1 Sample
+              </button>
+            </div>
+          </div>
+
+          <!-- Immutable Audit Log Table -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Immutable System Audit Trail (Read-Only)</h2>
+                <p class="text-xs text-slate-500">Every journal posting, invoice issuance, reprint, and tax export is permanently logged per BIR CAS rules</p>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-mono text-xs font-semibold">
+                <i class="fa-solid fa-lock text-emerald-600 mr-1"></i> Append-Only Ledger
+              </span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-3">Timestamp (PHT)</th>
+                    <th class="py-3 px-3">CPA User ID</th>
+                    <th class="py-3 px-3">Entity TIN</th>
+                    <th class="py-3 px-3">Module</th>
+                    <th class="py-3 px-3">Action</th>
+                    <th class="py-3 px-3">Document Ref #</th>
+                    <th class="py-3 px-3">Details</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-table-body" class="divide-y divide-slate-100 text-xs font-mono">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: ONBOARD NEW CLIENT ENTITY                                    -->
+  <!-- ===================================================================== -->
+  <div id="new-client-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900">Onboard New Client Entity</h3>
+        <button onclick="closeModal('new-client-modal')" class="text-slate-400 hover:text-slate-700 p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form onsubmit="createNewClientEntity(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Registered Business Name (SEC / DTI)</label>
+          <input type="text" id="nc-name" required placeholder="e.g., Cordillera Fresh Produce Corp." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">BIR TIN (14-Digit)</label>
+            <input type="text" id="nc-tin" required placeholder="009-712-440-00000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">RDO Code & District</label>
+            <input type="text" id="nc-rdo" required placeholder="008 - Baguio City" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Industry Vertical</label>
+            <select id="nc-industry" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="Retail / E-Commerce">Retail / E-Commerce</option>
+              <option value="Construction / Real Estate">Construction / Real Estate</option>
+              <option value="Food & Hospitality">Food & Hospitality</option>
+              <option value="IT / BPO Services">IT / BPO Services</option>
+              <option value="Healthcare / Professional">Healthcare / Professional</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">BIR Tax Classification</label>
+            <select id="nc-regime" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="VAT-Registered">VAT-Registered (12%)</option>
+              <option value="VAT / PEZA Zero-Rated">VAT / PEZA Zero-Rated</option>
+              <option value="Non-VAT (3% Percentage Tax)">Non-VAT (3% Percentage Tax)</option>
+            </select>
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('new-client-modal')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm">Create Tenant Workspace</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: BIR FORM 2307 & INVOICE PRINT PREVIEW MODAL                  -->
+  <!-- ===================================================================== -->
+  <div id="doc-preview-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <h3 id="modal-doc-title" class="text-base font-bold text-slate-900">BIR Document Preview</h3>
+          <span id="modal-reprint-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">ORIGINAL</span>
+        </div>
+        <button onclick="closeModal('doc-preview-modal')" class="text-slate-400 hover:text-slate-700 p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="modal-doc-content" class="p-6 overflow-y-auto flex-1">
+        <!-- Dynamically populated BIR 2307 or RR 6-2026 Invoice -->
+      </div>
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <span class="text-xs text-slate-500"><i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i> Logged in BIR CAS Reprint Audit Trail</span>
+        <div class="flex gap-2">
+          <button onclick="closeModal('doc-preview-modal')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-white">Close</button>
+          <button onclick="triggerPrintSimulation()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm">
+            <i class="fa-solid fa-print mr-1"></i> Print / Save PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT APPLICATION ENGINE                                         -->
+  <!-- ===================================================================== -->
+  <script>
+    // =========================================================================
+    // 2. STATE MANAGEMENT, ROLES (RBAC) & PERSISTENCE
+    // =========================================================================
+    const STORAGE_KEY = 'kuwenta_ph_erp_state_v2';
+
+    const INDUSTRY_COA = {
+      'Retail / E-Commerce': [
+        '1010 - Cash in Bank - BDO Current',
+        '1200 - Accounts Receivable - Trade',
+        '1300 - Merchandise Inventory',
+        '1410 - Input VAT - Goods & Services',
+        '1420 - Creditable Withholding Tax (CWT Asset)',
+        '2110 - Output VAT Payable',
+        '2120 - Expanded Withholding Tax (EWT) Payable',
+        '4010 - Gross Sales - Retail & E-Commerce',
+        '5010 - Cost of Goods Sold (COGS)',
+        '6010 - Marketplace & Platform Fees'
+      ],
+      'Construction / Real Estate': [
+        '1010 - Cash in Bank - BPI Commercial',
+        '1200 - Progress Billings Receivable',
+        '1250 - Retention Receivable (10% Held)',
+        '1410 - Input VAT - Capital & Materials',
+        '1420 - Creditable Withholding Tax (CWT Asset)',
+        '2110 - Output VAT Payable',
+        '2120 - Expanded Withholding Tax (EWT) Payable',
+        '4010 - Contract Revenue - Progress Billing',
+        '5010 - Direct Project & Subcontractor Costs',
+        '6020 - Site Overhead & Permits'
+      ],
+      'Food & Hospitality': [
+        '1010 - Cash in Bank & POS Clearing',
+        '1200 - Receivables - Corporate & Banquet',
+        '1300 - Food, Beverage & Commissary Stock',
+        '1410 - Input VAT - Supplies & Utilities',
+        '1420 - Creditable Withholding Tax (CWT Asset)',
+        '2110 - Output VAT Payable',
+        '2120 - Expanded Withholding Tax (EWT) Payable',
+        '4010 - Dine-In, Takeout & Catering Sales',
+        '5010 - Raw Food & Beverage Cost',
+        '6030 - Store Rent, Utilities & POS Fees'
+      ],
+      'IT / BPO Services': [
+        '1010 - Cash in Bank - USD & PHP Accounts',
+        '1200 - Accounts Receivable - Foreign Clients',
+        '1410 - Input VAT - Domestic Purchases',
+        '1420 - Creditable Withholding Tax (CWT Asset)',
+        '2110 - Output VAT Payable',
+        '2120 - Expanded Withholding Tax (EWT) Payable',
+        '4010 - Export IT / BPO Retainer Revenue',
+        '5010 - Direct Delivery & Cloud Infra Cost',
+        '6040 - Salaries, Benefits & PEZA Admin'
+      ],
+      'Healthcare / Professional': [
+        '1010 - Cash in Bank - Metrobank',
+        '1200 - HMO & Patient Receivables',
+        '1300 - Medical Supplies & Diagnostics Stock',
+        '1410 - Input VAT - Vatable Supplies',
+        '1420 - Creditable Withholding Tax (CWT Asset)',
+        '2110 - Output VAT Payable',
+        '2120 - Expanded Withholding Tax (EWT) Payable',
+        '4010 - Clinic & Diagnostic Service Fees',
+        '5010 - Medical Supplies & Specialist Fees',
+        '6050 - Clinic Lease, Utilities & Compliance'
+      ]
+    };
+
+    const DEFAULT_STATE = {
+      activeRole: 'partner',
+      activeClientId: 'client-1',
+      clients: [
+        {
+          id: 'client-1',
+          name: 'Maharlika Retail & E-Commerce Corp.',
+          tin: '009-482-119-00000',
+          rdo: '044 - Taguig / Pateros',
+          rdoShort: 'RDO 044',
+          industry: 'Retail / E-Commerce',
+          taxRegime: 'VAT-Registered',
+          isVat: true,
+          orusNumber: 'ORUS-2026-88412',
+          monthlyTrend: {
+            labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            revenue: [620000, 690000, 740000, 810000, 885000, 950000],
+            expenses: [380000, 415000, 440000, 475000, 510000, 545000]
+          },
+          calendar: [
+            { form: 'BIR Form 0619-E', title: 'Monthly Remittance of EWT (Oct 2026)', due: 'Nov 10, 2026', status: 'eFPS Filed' },
+            { form: 'BIR Form 2550Q', title: 'Quarterly VAT Return (Q3 2026)', due: 'Oct 25, 2026', status: 'Paid' },
+            { form: 'BIR Form 0619-E', title: 'Monthly Remittance of EWT (Nov 2026)', due: 'Dec 10, 2026', status: 'Prepared' }
+          ],
+          journalEntries: [
+            { id: 'JV-2026-101', date: '2026-11-05', book: 'Sales Journal', party: 'Shopee / Lazada Settlement', memo: 'Nov Batch E-Commerce Sales', account: '1010 - Cash in Bank - BDO Current', atc: 'NONE', debit: 554400, credit: 0 },
+            { id: 'JV-2026-101', date: '2026-11-05', book: 'Sales Journal', party: 'Shopee / Lazada Settlement', memo: '1% E-Marketplace CWT Withheld', account: '1420 - Creditable Withholding Tax (CWT Asset)', atc: 'WC158', debit: 5600, credit: 0 },
+            { id: 'JV-2026-101', date: '2026-11-05', book: 'Sales Journal', party: 'Shopee / Lazada Settlement', memo: 'Vatable Retail Sales', account: '4010 - Gross Sales - Retail & E-Commerce', atc: 'VAT12', debit: 0, credit: 500000 },
+            { id: 'JV-2026-101', date: '2026-11-05', book: 'Sales Journal', party: 'Shopee / Lazada Settlement', memo: '12% Output VAT', account: '2110 - Output VAT Payable', atc: 'VAT12', debit: 0, credit: 60000 },
+            { id: 'JV-2026-102', date: '2026-11-12', book: 'Purchase Journal', party: 'BGC Warehouse Lease Co.', memo: 'Nov Warehouse Rental & 5% EWT', account: '5010 - Cost of Goods Sold (COGS)', atc: 'WC100', debit: 240000, credit: 0 },
+            { id: 'JV-2026-102', date: '2026-11-12', book: 'Purchase Journal', party: 'BGC Warehouse Lease Co.', memo: '12% Input VAT on Lease', account: '1410 - Input VAT - Goods & Services', atc: 'VAT12', debit: 28800, credit: 0 },
+            { id: 'JV-2026-102', date: '2026-11-12', book: 'Purchase Journal', party: 'BGC Warehouse Lease Co.', memo: '5% Rental EWT Payable', account: '2120 - Expanded Withholding Tax (EWT) Payable', atc: 'WC100', debit: 0, credit: 12000 },
+            { id: 'JV-2026-102', date: '2026-11-12', book: 'Purchase Journal', party: 'BGC Warehouse Lease Co.', memo: 'Net Payable to Lessor', account: '1010 - Cash in Bank - BDO Current', atc: 'NONE', debit: 0, credit: 256800 }
+          ],
+          documents: [
+            { docNo: 'SI-2026-0412', type: 'SALES_INVOICE', party: 'MetroMart Distribution Inc.', tin: '004-882-190-00000', date: '2026-11-10', desc: 'Wholesale Consumer Goods Delivery', base: 180000, vatType: 'VATABLE', vat: 21600, atc: 'WC158', ewtRate: 0.01, ewt: 1800, net: 199800, printCount: 1 },
+            { docNo: 'AP-2026-0188', type: 'PURCHASE_BILL', party: 'BGC Warehouse Lease Co.', tin: '007-219-654-00000', date: '2026-11-12', desc: 'Warehouse Space Rental - Nov 2026', base: 240000, vatType: 'VATABLE', vat: 28800, atc: 'WC100', ewtRate: 0.05, ewt: 12000, net: 256800, printCount: 2 }
+          ],
+          industryOps: {
+            settlements: [
+              { platform: 'Shopee PH Official Mall', gross: 320000, fees: 19200, cwt1Pct: 3200, netPayout: 297600, status: 'Matched' },
+              { platform: 'LazMall Philippines', gross: 240000, fees: 14400, cwt1Pct: 2400, netPayout: 223200, status: 'Matched' }
+            ],
+            skus: [
+              { sku: 'SKU-MHL-01', name: 'Organic Coconut Oil 500ml', channel: 'Shopee / Direct', stock: 850, unitCost: 145 },
+              { sku: 'SKU-MHL-02', name: 'Artisanal Tablea Gift Box', channel: 'LazMall / Retail', stock: 420, unitCost: 230 }
+            ]
+          }
+        },
+        {
+          id: 'client-2',
+          name: 'Bayanihan Builders & Infra Corp.',
+          tin: '008-631-904-00000',
+          rdo: '041 - Mandaluyong City',
+          rdoShort: 'RDO 041',
+          industry: 'Construction / Real Estate',
+          taxRegime: 'VAT-Registered',
+          isVat: true,
+          orusNumber: 'ORUS-2026-51904',
+          monthlyTrend: {
+            labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            revenue: [1850000, 2100000, 1950000, 2400000, 2650000, 2900000],
+            expenses: [1320000, 1480000, 1410000, 1690000, 1850000, 2020000]
+          },
+          calendar: [
+            { form: 'BIR Form 2550Q', title: 'Quarterly VAT Return (Q3 2026)', due: 'Oct 25, 2026', status: 'eFPS Filed' },
+            { form: 'BIR Form 1601-EQ', title: 'Quarterly EWT Return (Q3 2026)', due: 'Oct 31, 2026', status: 'Paid' }
+          ],
+          journalEntries: [
+            { id: 'JV-2026-201', date: '2026-11-15', book: 'Sales Journal', party: 'Ortigas Commercial Tower', memo: 'Progress Billing #4 (35% POC)', account: '1200 - Progress Billings Receivable', atc: 'NONE', debit: 1316000, credit: 0 },
+            { id: 'JV-2026-201', date: '2026-11-15', book: 'Sales Journal', party: 'Ortigas Commercial Tower', memo: '2% Contractor CWT Withheld', account: '1420 - Creditable Withholding Tax (CWT Asset)', atc: 'WC160', debit: 24000, credit: 0 },
+            { id: 'JV-2026-201', date: '2026-11-15', book: 'Sales Journal', party: 'Ortigas Commercial Tower', memo: 'Contract Revenue Recognized', account: '4010 - Contract Revenue - Progress Billing', atc: 'VAT12', debit: 0, credit: 1200000 },
+            { id: 'JV-2026-201', date: '2026-11-15', book: 'Sales Journal', party: 'Ortigas Commercial Tower', memo: '12% Output VAT on Progress Billing', account: '2110 - Output VAT Payable', atc: 'VAT12', debit: 0, credit: 140000 }
+          ],
+          documents: [
+            { docNo: 'SI-2026-0890', type: 'SALES_INVOICE', party: 'Ortigas Commercial Tower', tin: '002-991-310-00000', date: '2026-11-15', desc: 'Structural Progress Billing #4', base: 1200000, vatType: 'VATABLE', vat: 140000, atc: 'WC160', ewtRate: 0.02, ewt: 24000, net: 1316000, printCount: 1 }
+          ],
+          industryOps: {
+            projects: [
+              { code: 'PRJ-ORT-04', name: 'Ortigas Commercial Tower Fit-Out', contractPrice: 18500000, billedPct: '35%', retentionHeld: 647500, subconEwt: 48000 },
+              { code: 'PRJ-CAV-02', name: 'Imus Logistics Hub Warehouse', contractPrice: 12000000, billedPct: '60%', retentionHeld: 720000, subconEwt: 62000 }
+            ]
+          }
+        },
+        {
+          id: 'client-3',
+          name: 'Kusina ni Juan Hospitality Group',
+          tin: '007-118-520-00000',
+          rdo: '050 - South Makati',
+          rdoShort: 'RDO 050',
+          industry: 'Food & Hospitality',
+          taxRegime: 'Non-VAT (3% Percentage Tax)',
+          isVat: false,
+          orusNumber: 'ORUS-2026-33109',
+          monthlyTrend: {
+            labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            revenue: [480000, 510000, 535000, 560000, 595000, 620000],
+            expenses: [310000, 325000, 340000, 355000, 370000, 385000]
+          },
+          calendar: [
+            { form: 'BIR Form 2551Q', title: 'Quarterly Percentage Tax (Q3 2026)', due: 'Oct 25, 2026', status: 'Paid' },
+            { form: 'BIR Form 0619-E', title: 'Monthly EWT Remittance (Nov 2026)', due: 'Dec 10, 2026', status: 'Pending' }
+          ],
+          journalEntries: [
+            { id: 'JV-2026-301', date: '2026-11-18', book: 'Cash Receipts Book', party: 'Makati Branch POS Z-Read', memo: 'Daily POS Sales Settlement', account: '1010 - Cash in Bank & POS Clearing', atc: 'NONE', debit: 280000, credit: 0 },
+            { id: 'JV-2026-301', date: '2026-11-18', book: 'Cash Receipts Book', party: 'Makati Branch POS Z-Read', memo: 'Non-VAT Gross Receipts', account: '4010 - Dine-In, Takeout & Catering Sales', atc: 'EXEMPT', debit: 0, credit: 280000 }
+          ],
+          documents: [
+            { docNo: 'SI-2026-1104', type: 'SALES_INVOICE', party: 'Poblacion Corporate Event', tin: '005-312-778-00000', date: '2026-11-18', desc: 'Catering & Banquet Service', base: 140000, vatType: 'EXEMPT', vat: 0, atc: 'WC160', ewtRate: 0.02, ewt: 2800, net: 137200, printCount: 1 }
+          ],
+          industryOps: {
+            branches: [
+              { branch: 'Poblacion Makati Flagship', posZRead: 'Z-2026-1121-01', grossSales: 380000, foodCostPct: '31.5%', seniorPwdDisc: 24500 },
+              { branch: 'BGC High Street Kiosk', posZRead: 'Z-2026-1121-02', grossSales: 240000, foodCostPct: '29.8%', seniorPwdDisc: 11200 }
+            ]
+          }
+        },
+        {
+          id: 'client-4',
+          name: 'Silangan Cloud & BPO Solutions Inc.',
+          tin: '010-224-881-00000',
+          rdo: '047 - East Makati',
+          rdoShort: 'RDO 047',
+          industry: 'IT / BPO Services',
+          taxRegime: 'VAT / PEZA Zero-Rated',
+          isVat: true,
+          orusNumber: 'ORUS-2026-99210',
+          monthlyTrend: {
+            labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            revenue: [1450000, 1520000, 1600000, 1680000, 1750000, 1820000],
+            expenses: [890000, 920000, 960000, 1010000, 1040000, 1080000]
+          },
+          calendar: [
+            { form: 'BIR Form 2550Q', title: 'Quarterly VAT Return (0% Export)', due: 'Oct 25, 2026', status: 'eFPS Filed' }
+          ],
+          journalEntries: [
+            { id: 'JV-2026-401', date: '2026-11-19', book: 'Sales Journal', party: 'Northstar FinTech US', memo: 'Monthly DevOps Retainer (0% VAT)', account: '1010 - Cash in Bank - USD & PHP Accounts', atc: 'NONE', debit: 950000, credit: 0 },
+            { id: 'JV-2026-401', date: '2026-11-19', book: 'Sales Journal', party: 'Northstar FinTech US', memo: 'Zero-Rated Export Services', account: '4010 - Export IT / BPO Retainer Revenue', atc: 'ZERO', debit: 0, credit: 950000 }
+          ],
+          documents: [
+            { docNo: 'SI-2026-2041', type: 'SALES_INVOICE', party: 'Northstar FinTech US', tin: '000-000-000-00000', date: '2026-11-19', desc: 'Cloud Engineering Retainer (Sec. 108B2)', base: 950000, vatType: 'ZERO_RATED', vat: 0, atc: 'NONE', ewtRate: 0, ewt: 0, net: 950000, printCount: 1 }
+          ],
+          industryOps: {
+            retainers: [
+              { client: 'Northstar FinTech US', fteCount: 14, monthlyUsd: '$16,500', phpEquiv: 950000, vatClass: '0% Zero-Rated (Export)' },
+              { client: 'Kinetix Health SG', fteCount: 9, monthlyUsd: '$11,200', phpEquiv: 645000, vatClass: '0% Zero-Rated (Export)' }
+            ]
+          }
+        },
+        {
+          id: 'client-5',
+          name: 'Lunas Wellness & Diagnostics Clinic',
+          tin: '006-745-192-00000',
+          rdo: '039 - South Quezon City',
+          rdoShort: 'RDO 039',
+          industry: 'Healthcare / Professional',
+          taxRegime: 'VAT-Registered',
+          isVat: true,
+          orusNumber: 'ORUS-2026-64120',
+          monthlyTrend: {
+            labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            revenue: [540000, 565000, 590000, 610000, 640000, 675000],
+            expenses: [330000, 345000, 355000, 370000, 385000, 405000]
+          },
+          calendar: [
+            { form: 'BIR Form 0619-E', title: 'Monthly EWT on Doctors / Suppliers', due: 'Dec 10, 2026', status: 'Pending' }
+          ],
+          journalEntries: [
+            { id: 'JV-2026-501', date: '2026-11-20', book: 'Cash Receipts Book', party: 'Maxicare Healthcare Corp.', memo: 'HMO Lab & Consult Settlement', account: '1010 - Cash in Bank - Metrobank', atc: 'NONE', debit: 270000, credit: 0 },
+            { id: 'JV-2026-501', date: '2026-11-20', book: 'Cash Receipts Book', party: 'Maxicare Healthcare Corp.', memo: '10% CWT Withheld by HMO', account: '1420 - Creditable Withholding Tax (CWT Asset)', atc: 'WI010', debit: 30000, credit: 0 },
+            { id: 'JV-2026-501', date: '2026-11-20', book: 'Cash Receipts Book', party: 'Maxicare Healthcare Corp.', memo: 'Clinic & Diagnostic Service Fees', account: '4010 - Clinic & Diagnostic Service Fees', atc: 'EXEMPT', debit: 0, credit: 300000 }
+          ],
+          documents: [
+            { docNo: 'SI-2026-3009', type: 'SALES_INVOICE', party: 'Maxicare Healthcare Corp.', tin: '000-518-291-00000', date: '2026-11-20', desc: 'Outpatient Diagnostic & Lab Claims', base: 300000, vatType: 'EXEMPT', vat: 0, atc: 'WI010', ewtRate: 0.10, ewt: 30000, net: 270000, printCount: 1 }
+          ],
+          industryOps: {
+            hmoClaims: [
+              { hmo: 'Maxicare Healthcare Corp.', billed: 300000, cwt10Pct: 30000, netCollected: 270000, status: '2307 Issued' },
+              { hmo: 'Medicard Philippines Inc.', billed: 185000, cwt10Pct: 18500, netCollected: 166500, status: 'Pending 2307' }
+            ]
+          }
+        }
+      ],
+      auditLogs: [
+        { timestamp: '2026-11-21 09:00:00 PHT', user: 'Atty./CPA Maria Santos [Managing Partner]', tin: '009-482-119-00000', module: 'BIR CAS', action: 'SYSTEM_INIT', ref: 'CAS-2026-V2', details: 'Initialized multi-tenant ERP & RR 6-2026 compliance engine' }
+      ]
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        const parsed = JSON.parse(raw);
+        if (!parsed.clients || !parsed.clients.length) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        return parsed;
+      } catch (err) {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        // Ignore storage quota errors in restricted sandboxes
+      }
+    }
+
+    function resetDemoData() {
+      localStorage.removeItem(STORAGE_KEY);
+      appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      activeBookFilter = 'ALL';
+      saveState();
+      resetJournalLines();
+      applyRoleRestrictions();
+      renderAll();
+      showToast('Demo workspace reset to default multi-tenant Philippine data.', 'indigo');
+    }
+
+    function getActiveClient() {
+      return appState.clients.find(c => c.id === appState.activeClientId) || appState.clients[0];
+    }
+
+    function getCOAAccounts() {
+      const client = getActiveClient();
+      const base = INDUSTRY_COA[client.industry] || INDUSTRY_COA['Retail / E-Commerce'];
+      return Array.from(new Set([
+        ...base,
+        '1410 - Input VAT - Goods & Services',
+        '1420 - Creditable Withholding Tax (CWT Asset)',
+        '2110 - Output VAT Payable',
+        '2120 - Expanded Withholding Tax (EWT) Payable'
+      ]));
+    }
+
+    function formatPHP(amount) {
+      const num = Number(amount) || 0;
+      return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showToast(message, tone = 'indigo') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const palette = {
+        indigo: 'bg-indigo-900 text-white border-indigo-700',
+        emerald: 'bg-emerald-900 text-white border-emerald-700',
+        rose: 'bg-rose-900 text-white border-rose-700'
+      };
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 ${palette[tone] || palette.indigo}`;
+      toast.innerHTML = `<i class="fa-solid fa-circle-info text-emerald-300"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    const USER_ROLES = {
+      partner: {
+        id: 'partner',
+        userName: 'Atty./CPA Maria Santos',
+        roleTitle: 'Managing Partner',
+        canSwitchClients: true,
+        canOnboardClient: true,
+        canWriteBooks: true,
+        canApproveTax: true,
+        canViewAudit: true,
+        allowedTabs: ['dashboard', 'ledger', 'invoicing', 'tax', 'industry', 'audit'],
+        bannerText: ''
+      },
+      senior: {
+        id: 'senior',
+        userName: 'Carlo Reyes, CPA',
+        roleTitle: 'Senior Tax Accountant',
+        canSwitchClients: true,
+        canOnboardClient: false,
+        canWriteBooks: true,
+        canApproveTax: true,
+        canViewAudit: true,
+        allowedTabs: ['dashboard', 'ledger', 'invoicing', 'tax', 'industry', 'audit'],
+        bannerText: 'Senior Tax CPA Role: Full tax filing & ledger review enabled. Client onboarding & firm admin settings are restricted.'
+      },
+      junior: {
+        id: 'junior',
+        userName: 'Bea Mendoza',
+        roleTitle: 'Junior Bookkeeper',
+        canSwitchClients: true,
+        canOnboardClient: false,
+        canWriteBooks: true,
+        canApproveTax: false,
+        canViewAudit: false,
+        allowedTabs: ['dashboard', 'ledger', 'invoicing', 'industry'],
+        bannerText: 'Junior Bookkeeper Role: Data entry enabled. BIR Tax Filing approvals, .DAT exports, and CAS Audit Trail are restricted.'
+      },
+      client: {
+        id: 'client',
+        userName: 'Marco Tan (Client Viewer)',
+        roleTitle: 'Client Portal Viewer',
+        canSwitchClients: false,
+        canOnboardClient: false,
+        canWriteBooks: false,
+        canApproveTax: false,
+        canViewAudit: false,
+        allowedTabs: ['dashboard', 'invoicing'],
+        bannerText: 'Client Portal Read-Only Role: Locked to Maharlika Retail & E-Commerce Corp. Ledger editing, tax engine, and other clients are restricted.'
+      }
+    };
+
+    let appState = loadState();
+    if (!appState.activeRole) appState.activeRole = 'partner';
+    let activeBookFilter = 'ALL';
+    let financialChartInstance = null;
+
+    function getCurrentRole() {
+      return USER_ROLES[appState.activeRole] || USER_ROLES.partner;
+    }
+
+    function enterWorkspace(roleId = 'partner', initialTab = 'dashboard') {
+      document.getElementById('landing-view').classList.add('hidden');
+      document.getElementById('workspace-view').classList.remove('hidden');
+      switchUserRole(roleId, true);
+      switchTab(initialTab);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showLandingPage() {
+      document.getElementById('workspace-view').classList.add('hidden');
+      document.getElementById('landing-view').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchUserRole(roleId, silent = false) {
+      appState.activeRole = roleId;
+      const role = getCurrentRole();
+
+      // If client viewer, lock to client-1
+      if (!role.canSwitchClients) {
+        appState.activeClientId = 'client-1';
+      }
+
+      logAudit('Access Control', 'ROLE_SWITCH', role.id.toUpperCase(), `Switched active session to ${role.userName} (${role.roleTitle})`);
+      saveState();
+      applyRoleRestrictions();
+      renderAll();
+
+      // Redirect to dashboard if current tab is restricted for the new role
+      const activePanel = document.querySelector('.tab-panel:not(.hidden)');
+      if (activePanel) {
+        const currentTab = activePanel.id.replace('tab-', '');
+        if (!role.allowedTabs.includes(currentTab)) {
+          switchTab('dashboard');
+        }
+      }
+
+      if (!silent) {
+        showToast(`Role switched to ${role.userName} (${role.roleTitle})`, 'indigo');
+      }
+    }
+
+    function applyRoleRestrictions() {
+      const role = getCurrentRole();
+      const roleSelect = document.getElementById('role-switcher');
+      if (roleSelect) roleSelect.value = role.id;
+
+      document.getElementById('sidebar-role-label').textContent = role.roleTitle;
+
+      // Restriction banner
+      const banner = document.getElementById('role-restriction-banner');
+      if (role.bannerText) {
+        banner.classList.remove('hidden');
+        document.getElementById('role-restriction-text').textContent = role.bannerText;
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      // Client switcher lock
+      const clientSwitcher = document.getElementById('client-switcher');
+      const clientLock = document.getElementById('client-lock-indicator');
+      if (clientSwitcher) {
+        clientSwitcher.disabled = !role.canSwitchClients;
+        if (!role.canSwitchClients) clientLock.classList.remove('hidden');
+        else clientLock.classList.add('hidden');
+      }
+
+      // New client button
+      const btnNewClient = document.getElementById('btn-new-client');
+      if (btnNewClient) {
+        if (!role.canOnboardClient) {
+          btnNewClient.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          btnNewClient.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      }
+
+      // Practice matrix card visibility (hide cross-client portfolio for client viewer)
+      const matrixCard = document.getElementById('practice-matrix-card');
+      if (matrixCard) {
+        if (!role.canSwitchClients) matrixCard.classList.add('hidden');
+        else matrixCard.classList.remove('hidden');
+      }
+
+      // Write forms visibility (hide JE creator & Invoice creator for read-only client viewer)
+      const jeCreator = document.getElementById('je-creator-card');
+      const invCreator = document.getElementById('invoice-creator-card');
+      if (jeCreator) jeCreator.classList.toggle('hidden', !role.canWriteBooks);
+      if (invCreator) invCreator.classList.toggle('hidden', !role.canWriteBooks);
+
+      // Lock icons on restricted navigation tabs
+      ['ledger', 'tax', 'industry', 'audit'].forEach(tabName => {
+        const lockEl = document.getElementById(`lock-nav-${tabName}`);
+        if (lockEl) {
+          lockEl.classList.toggle('hidden', role.allowedTabs.includes(tabName));
+        }
+      });
+    }
+
+    function switchTab(tabId) {
+      const role = getCurrentRole();
+      if (!role.allowedTabs.includes(tabId)) {
+        logAudit('Access Control', 'BLOCKED_TAB', tabId.toUpperCase(), `Blocked unauthorized access to ${tabId} module`);
+        renderAuditLogs();
+        showToast(`Access Restricted: ${role.roleTitle} cannot access the ${tabId.toUpperCase()} module.`, 'rose');
+        return;
+      }
+
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        if (btn.dataset.nav === tabId) {
+          btn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
+          btn.classList.remove('text-slate-300', 'hover:bg-slate-800');
+        } else {
+          btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
+          btn.classList.add('text-slate-300', 'hover:bg-slate-800');
+        }
+      });
+
+      // Close mobile sidebar if open
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      if (tabId === 'dashboard') renderChart();
+    }
+
+    // =========================================================================
+    // 3. HEADER, MULTI-TENANT SWITCHER & METRICS ENGINE
+    // =========================================================================
+    function renderHeaderAndSwitcher() {
+      const client = getActiveClient();
+      const switcher = document.getElementById('client-switcher');
+      if (switcher) {
+        switcher.innerHTML = appState.clients.map(c =>
+          `<option value="${c.id}" ${c.id === client.id ? 'selected' : ''}>${c.name} (${c.rdoShort} • ${c.industry})</option>`
+        ).join('');
+      }
+
+      document.getElementById('header-tin').textContent = client.tin;
+      document.getElementById('sub-industry').textContent = client.industry;
+      document.getElementById('sub-rdo-full').textContent = client.rdo;
+      document.getElementById('sub-orus').textContent = client.orusNumber;
+      document.getElementById('header-tax-regime').innerHTML = `<i class="fa-solid fa-receipt text-[11px]"></i> ${client.taxRegime}`;
+      document.getElementById('nav-industry-label').textContent = client.industry.split('/')[0].trim() + ' Ops';
+      const auditOrus = document.getElementById('audit-orus-id');
+      if (auditOrus) auditOrus.textContent = client.orusNumber;
+    }
+
+    function handleClientSwitch(clientId) {
+      const role = getCurrentRole();
+      if (!role.canSwitchClients) {
+        showToast('Access Restricted: Client Portal Viewers are locked to their assigned entity.', 'rose');
+        renderHeaderAndSwitcher();
+        return;
+      }
+      appState.activeClientId = clientId;
+      saveState();
+      resetJournalLines();
+      renderAll();
+      const client = getActiveClient();
+      showToast(`Switched active entity to ${client.name} (${client.rdoShort})`, 'indigo');
+    }
+
+    function computeClientMetrics(client) {
+      let vatableSales = 0;
+      let zeroRatedSales = 0;
+      let exemptSales = 0;
+      let outputVat = 0;
+      let inputVat = 0;
+      let cwtAsset = 0;
+      let ewtPayable = 0;
+      let operatingExpenses = 0;
+
+      client.journalEntries.forEach(entry => {
+        const acct = entry.account || '';
+        if (acct.startsWith('4')) {
+          const rev = entry.credit || 0;
+          if (entry.atc === 'ZERO') zeroRatedSales += rev;
+          else if (entry.atc === 'EXEMPT') exemptSales += rev;
+          else vatableSales += rev;
+        }
+        if (acct.startsWith('2110')) outputVat += (entry.credit || 0) - (entry.debit || 0);
+        if (acct.startsWith('1410')) inputVat += (entry.debit || 0) - (entry.credit || 0);
+        if (acct.startsWith('1420')) cwtAsset += (entry.debit || 0) - (entry.credit || 0);
+        if (acct.startsWith('2120')) ewtPayable += (entry.credit || 0) - (entry.debit || 0);
+        if (acct.startsWith('5') || acct.startsWith('6')) {
+          operatingExpenses += (entry.debit || 0) - (entry.credit || 0);
+        }
+      });
+
+      const totalRevenue = vatableSales + zeroRatedSales + exemptSales;
+      const currentMonthRevenue = client.monthlyTrend?.revenue?.slice(-1)[0] || totalRevenue;
+      const netVatPayable = Math.max(0, outputVat - inputVat);
+      const percentageTax = !client.isVat ? currentMonthRevenue * 0.03 : 0;
+      const netIncome = totalRevenue - operatingExpenses;
+
+      return {
+        vatableSales,
+        zeroRatedSales,
+        exemptSales,
+        totalRevenue,
+        currentMonthRevenue,
+        outputVat,
+        inputVat,
+        netVatPayable,
+        cwtAsset,
+        ewtPayable,
+        percentageTax,
+        netIncome
+      };
+    }
+
+    // =========================================================================
+    // 4. EXECUTIVE DASHBOARD & CHART RENDERING
+    // =========================================================================
+    function renderDashboard() {
+      const client = getActiveClient();
+      const m = computeClientMetrics(client);
+
+      document.getElementById('kpi-revenue').textContent = formatPHP(m.totalRevenue);
+
+      if (client.isVat) {
+        document.getElementById('kpi-vat-label').textContent = 'Net VAT Payable (2550Q)';
+        document.getElementById('kpi-vat').textContent = formatPHP(m.netVatPayable);
+        document.getElementById('kpi-vat-sub').textContent = `Output: ${formatPHP(m.outputVat)} | Input: ${formatPHP(m.inputVat)}`;
+      } else {
+        document.getElementById('kpi-vat-label').textContent = 'Percentage Tax (2551Q 3%)';
+        document.getElementById('kpi-vat').textContent = formatPHP(m.percentageTax);
+        document.getElementById('kpi-vat-sub').textContent = `Non-VAT Regime • 3% Gross Receipts`;
+      }
+
+      document.getElementById('kpi-ewt').textContent = formatPHP(m.ewtPayable);
+      document.getElementById('kpi-cwt-receivable').textContent = `CWT Asset: ${formatPHP(m.cwtAsset)}`;
+      document.getElementById('kpi-net-income').textContent = formatPHP(m.netIncome);
+
+      // Filing Calendar
+      const calContainer = document.getElementById('bir-calendar-list');
+      const statusColors = {
+        'Pending': 'bg-amber-100 text-amber-800 border-amber-200',
+        'Prepared': 'bg-sky-100 text-sky-800 border-sky-200',
+        'eFPS Filed': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+        'Paid': 'bg-emerald-100 text-emerald-800 border-emerald-200'
+      };
+      calContainer.innerHTML = (client.calendar || []).map((item, idx) => `
+        <div class="p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/60 flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-bold text-slate-900">${item.form} <span class="text-slate-400 font-normal">• Due ${item.due}</span></p>
+            <p class="text-xs text-slate-600 mt-0.5">${item.title}</p>
+          </div>
+          <button onclick="cycleCalendarStatus(${idx})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border shrink-0 transition ${statusColors[item.status] || statusColors.Pending}">
+            ${item.status}
+          </button>
+        </div>
+      `).join('');
+
+      // Practice Multi-Tenant Matrix
+      const matrixBody = document.getElementById('practice-matrix-body');
+      matrixBody.innerHTML = appState.clients.map(c => {
+        const cm = computeClientMetrics(c);
+        const isCurrent = c.id === client.id;
+        return `
+          <tr class="${isCurrent ? 'bg-indigo-50/40' : 'hover:bg-slate-50'} transition">
+            <td class="py-3 px-3 font-semibold text-slate-900">${c.name}</td>
+            <td class="py-3 px-3 font-mono text-xs text-slate-600">${c.tin} <span class="text-indigo-600 font-semibold">(${c.rdoShort})</span></td>
+            <td class="py-3 px-3 text-xs text-slate-700">${c.industry}</td>
+            <td class="py-3 px-3 text-xs"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">${c.taxRegime}</span></td>
+            <td class="py-3 px-3 text-right font-mono text-xs font-bold text-slate-900">${formatPHP(cm.totalRevenue)}</td>
+            <td class="py-3 px-3 text-center">
+              <button onclick="handleClientSwitch('${c.id}')" class="px-3 py-1 rounded-lg text-xs font-semibold ${isCurrent ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700'}">
+                ${isCurrent ? 'Active' : 'Switch'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderChart();
+    }
+
+    function renderChart() {
+      const canvas = document.getElementById('financialChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const client = getActiveClient();
+      const trend = client.monthlyTrend || { labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'], revenue: [], expenses: [] };
+
+      if (financialChartInstance) {
+        financialChartInstance.destroy();
+      }
+
+      financialChartInstance = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: trend.labels,
+          datasets: [
+            {
+              label: 'Gross Revenue (₱)',
+              data: trend.revenue,
+              backgroundColor: 'rgba(79, 70, 229, 0.85)',
+              borderRadius: 6
+            },
+            {
+              label: 'Operating Expenses (₱)',
+              data: trend.expenses,
+              backgroundColor: 'rgba(16, 185, 129, 0.75)',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                font: { family: 'JetBrains Mono', size: 10 },
+                callback: v => '₱' + (v / 1000).toFixed(0) + 'k'
+              }
+            },
+            x: { ticks: { font: { family: 'Inter', size: 11 } } }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // 5. AUDIT LOG HELPER & JOURNAL LINE BUILDERS
+    // =========================================================================
+    function logAudit(module, action, ref, details) {
+      const client = getActiveClient();
+      const role = getCurrentRole();
+      const now = new Date();
+      const ts = now.toISOString().replace('T', ' ').substring(0, 19) + ' PHT';
+      appState.auditLogs.unshift({
+        timestamp: ts,
+        user: `${role.userName} [${role.roleTitle}]`,
+        tin: client.tin,
+        module,
+        action,
+        ref,
+        details
+      });
+      saveState();
+    }
+
+    function addJournalLine(defaultAcct = '', defaultDebit = '', defaultCredit = '', defaultAtc = 'NONE') {
+      const tbody = document.getElementById('je-lines-container');
+      const accounts = getCOAAccounts();
+      const row = document.createElement('tr');
+      row.className = 'je-line-row';
+      row.innerHTML = `
+        <td class="py-2 px-3">
+          <select class="je-acct w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            ${accounts.map(a => `<option value="${a}" ${a === defaultAcct ? 'selected' : ''}>${a}</option>`).join('')}
+          </select>
+        </td>
+        <td class="py-2 px-3">
+          <select class="je-atc w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="NONE" ${defaultAtc === 'NONE' ? 'selected' : ''}>NONE</option>
+            <option value="VAT12" ${defaultAtc === 'VAT12' ? 'selected' : ''}>VAT12 (12%)</option>
+            <option value="ZERO" ${defaultAtc === 'ZERO' ? 'selected' : ''}>ZERO (0%)</option>
+            <option value="EXEMPT" ${defaultAtc === 'EXEMPT' ? 'selected' : ''}>EXEMPT</option>
+            <option value="WC158" ${defaultAtc === 'WC158' ? 'selected' : ''}>WC158 (1%)</option>
+            <option value="WC160" ${defaultAtc === 'WC160' ? 'selected' : ''}>WC160 (2%)</option>
+            <option value="WC100" ${defaultAtc === 'WC100' ? 'selected' : ''}>WC100 (5%)</option>
+            <option value="WI010" ${defaultAtc === 'WI010' ? 'selected' : ''}>WI010 (10%)</option>
+          </select>
+        </td>
+        <td class="py-2 px-3">
+          <input type="number" step="0.01" min="0" value="${defaultDebit}" oninput="validateJournalTotals()" placeholder="0.00" class="je-debit w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-mono text-right focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </td>
+        <td class="py-2 px-3">
+          <input type="number" step="0.01" min="0" value="${defaultCredit}" oninput="validateJournalTotals()" placeholder="0.00" class="je-credit w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-mono text-right focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </td>
+        <td class="py-2 px-3 text-center">
+          <button type="button" onclick="removeJournalLine(this)" class="text-slate-400 hover:text-rose-600 p-1" title="Remove line">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(row);
+      validateJournalTotals();
+    }
+
+    function removeJournalLine(btn) {
+      const tbody = document.getElementById('je-lines-container');
+      if (tbody.querySelectorAll('.je-line-row').length > 2) {
+        btn.closest('tr').remove();
+        validateJournalTotals();
+      } else {
+        showToast('A double-entry journal requires at least 2 lines.', 'rose');
+      }
+    }
+
+    function resetJournalLines() {
+      const tbody = document.getElementById('je-lines-container');
+      if (!tbody) return;
+      const accts = getCOAAccounts();
+      tbody.innerHTML = '';
+      addJournalLine(accts.find(a => a.startsWith('5') || a.startsWith('6')) || accts[0], '10000', '', 'WC160');
+      addJournalLine(accts[0], '', '10000', 'NONE');
+    }
+
+    function validateJournalTotals() {
+      let totalDebit = 0;
+      let totalCredit = 0;
+      document.querySelectorAll('.je-line-row').forEach(row => {
+        totalDebit += parseFloat(row.querySelector('.je-debit').value) || 0;
+        totalCredit += parseFloat(row.querySelector('.je-credit').value) || 0;
+      });
+      const diff = Math.abs(totalDebit - totalCredit);
+      const isBalanced = diff < 0.005 && totalDebit > 0;
+
+      const debitEl = document.getElementById('je-total-debit');
+      const creditEl = document.getElementById('je-total-credit');
+      const badgeEl = document.getElementById('je-balance-badge');
+
+      if (debitEl) debitEl.textContent = formatPHP(totalDebit);
+      if (creditEl) creditEl.textContent = formatPHP(totalCredit);
+      if (badgeEl) {
+        if (isBalanced) {
+          badgeEl.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          badgeEl.innerHTML = '<i class="fa-solid fa-check-circle"></i> Balanced (₱0.00 diff)';
+        } else {
+          badgeEl.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200';
+          badgeEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Unbalanced (${formatPHP(diff)} diff)`;
+        }
+      }
+      return isBalanced;
+    }
+
+    function cycleCalendarStatus(idx) {
+      const role = getCurrentRole();
+      if (!role.canApproveTax) {
+        logAudit('Access Control', 'BLOCKED_TAX_STATUS', 'CALENDAR', `Blocked ${role.roleTitle} from changing BIR filing status`);
+        renderAuditLogs();
+        showToast(`Access Restricted: ${role.roleTitle} cannot modify BIR tax filing statuses.`, 'rose');
+        return;
+      }
+      const states = ['Pending', 'Prepared', 'eFPS Filed', 'Paid'];
+      const client = getActiveClient();
+      const item = client.calendar[idx];
+      const next = states[(states.indexOf(item.status) + 1) % states.length];
+      item.status = next;
+      logAudit('Tax Calendar', 'STATUS_UPDATE', item.form, `Updated ${item.form} filing status to ${next}`);
+      renderDashboard();
+      renderAuditLogs();
+      showToast(`${item.form} marked as "${next}"`, 'emerald');
+    }
+
+    function submitJournalEntry(e) {
+      e.preventDefault();
+      const role = getCurrentRole();
+      if (!role.canWriteBooks) {
+        showToast(`Access Restricted: ${role.roleTitle} has read-only access.`, 'rose');
+        return;
+      }
+      if (!validateJournalTotals()) {
+        showToast('Journal entry must be balanced (Total Debit = Total Credit) before posting.', 'rose');
+        return;
+      }
+
+      const client = getActiveClient();
+      const date = document.getElementById('je-date').value;
+      const book = document.getElementById('je-book').value;
+      const party = document.getElementById('je-party').value;
+      const memo = document.getElementById('je-memo').value;
+      const jvRef = 'JV-2026-' + Math.floor(100 + Math.random() * 899);
+
+      let totalPosted = 0;
+      document.querySelectorAll('.je-line-row').forEach(row => {
+        const account = row.querySelector('.je-acct').value;
+        const atc = row.querySelector('.je-atc').value;
+        const debit = parseFloat(row.querySelector('.je-debit').value) || 0;
+        const credit = parseFloat(row.querySelector('.je-credit').value) || 0;
+        if (debit > 0 || credit > 0) {
+          totalPosted += debit;
+          client.journalEntries.unshift({
+            id: jvRef,
+            date,
+            book,
+            party,
+            memo,
+            account,
+            atc,
+            debit,
+            credit
+          });
+        }
+      });
+
+      logAudit('BIR Books', 'POST_JV', jvRef, `Posted to ${book}: ${memo} (${formatPHP(totalPosted)})`);
+      saveState();
+      renderAll();
+      showToast(`Posted ${jvRef} to ${book} (${formatPHP(totalPosted)})`, 'emerald');
+    }
+
+    function setBookFilter(bookName) {
+      activeBookFilter = bookName;
+      document.querySelectorAll('.book-tab').forEach(btn => {
+        if (btn.dataset.book === bookName) {
+          btn.className = 'book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white';
+        } else {
+          btn.className = 'book-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200';
+        }
+      });
+      renderBooksTable();
+    }
+
+    function renderBooksTable() {
+      const client = getActiveClient();
+      const query = (document.getElementById('book-search').value || '').toLowerCase();
+      const tbody = document.getElementById('books-table-body');
+
+      const filtered = client.journalEntries.filter(entry => {
+        const matchesBook = activeBookFilter === 'ALL' || entry.book === activeBookFilter;
+        const matchesQuery = !query ||
+          entry.id.toLowerCase().includes(query) ||
+          entry.account.toLowerCase().includes(query) ||
+          entry.party.toLowerCase().includes(query) ||
+          entry.memo.toLowerCase().includes(query);
+        return matchesBook && matchesQuery;
+      });
+
+      tbody.innerHTML = filtered.map(e => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">
+            <span class="font-semibold text-slate-800">${e.date}</span>
+            <span class="block text-[10px] text-indigo-600">${e.id}</span>
+          </td>
+          <td class="py-2.5 px-3 whitespace-nowrap">
+            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">${e.book}</span>
+          </td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800">${e.account}</td>
+          <td class="py-2.5 px-3">
+            <span class="font-medium text-slate-800 block">${e.party}</span>
+            <span class="text-slate-500 text-[11px]">${e.memo}</span>
+          </td>
+          <td class="py-2.5 px-3 font-mono">
+            <span class="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold">${e.atc}</span>
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono tabular-nums ${e.debit > 0 ? 'text-slate-900 font-semibold' : 'text-slate-300'}">
+            ${e.debit > 0 ? formatPHP(e.debit) : '—'}
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono tabular-nums ${e.credit > 0 ? 'text-slate-900 font-semibold' : 'text-slate-300'}">
+            ${e.credit > 0 ? formatPHP(e.credit) : '—'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function exportBooksCSV() {
+      const role = getCurrentRole();
+      if (!role.canApproveTax) {
+        logAudit('Access Control', 'BLOCKED_EXPORT', 'BOOKS_CSV', `Blocked ${role.roleTitle} from exporting master books`);
+        renderAuditLogs();
+        showToast(`Access Restricted: ${role.roleTitle} cannot export master BIR Books.`, 'rose');
+        return;
+      }
+      const client = getActiveClient();
+      const headers = ['Date', 'Reference', 'Book', 'Account Title', 'Counterparty', 'Particulars', 'ATC', 'Debit', 'Credit'];
+      const rows = client.journalEntries.map(e => [
+        e.date, e.id, `"${e.book}"`, `"${e.account}"`, `"${e.party}"`, `"${e.memo}"`, e.atc, e.debit.toFixed(2), e.credit.toFixed(2)
+      ]);
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csvContent));
+      link.setAttribute('download', `${client.tin}_BIR_Books_${activeBookFilter.replace(/\s+/g, '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      logAudit('BIR Books', 'EXPORT_CSV', activeBookFilter, `Exported ${client.journalEntries.length} ledger rows to CSV`);
+      renderAuditLogs();
+      showToast('BIR Book of Accounts exported to CSV.', 'emerald');
+    }
+
+    // =========================================================================
+    // 7. INVOICING, AR/AP, RR 6-2026 CWT & BIR FORM 2307 GENERATOR
+    // =========================================================================
+    function recalcInvoicePreview() {
+      const base = parseFloat(document.getElementById('inv-base').value) || 0;
+      const vatType = document.getElementById('inv-vat-type').value;
+      const atcVal = document.getElementById('inv-atc').value;
+      const ewtRate = parseFloat(atcVal.split('|')[1]) || 0;
+
+      const vat = vatType === 'VATABLE' ? base * 0.12 : 0;
+      const ewt = base * ewtRate;
+      const net = base + vat - ewt;
+
+      document.getElementById('prev-vat').textContent = formatPHP(vat);
+      document.getElementById('prev-ewt').textContent = '-' + formatPHP(ewt);
+      document.getElementById('prev-net').textContent = formatPHP(net);
+    }
+
+    function createDocument(e) {
+      e.preventDefault();
+      const role = getCurrentRole();
+      if (!role.canWriteBooks) {
+        showToast(`Access Restricted: ${role.roleTitle} cannot issue invoices or bills.`, 'rose');
+        return;
+      }
+      const client = getActiveClient();
+      const type = document.getElementById('inv-type').value;
+      const party = document.getElementById('inv-party').value;
+      const tin = document.getElementById('inv-tin').value;
+      const date = document.getElementById('inv-date').value;
+      const desc = document.getElementById('inv-desc').value;
+      const base = parseFloat(document.getElementById('inv-base').value) || 0;
+      const vatType = document.getElementById('inv-vat-type').value;
+      const [atcCode, rateStr] = document.getElementById('inv-atc').value.split('|');
+      const ewtRate = parseFloat(rateStr) || 0;
+
+      const vat = vatType === 'VATABLE' ? base * 0.12 : 0;
+      const ewt = base * ewtRate;
+      const net = base + vat - ewt;
+
+      const prefix = type === 'SALES_INVOICE' ? 'SI-2026-' : 'AP-2026-';
+      const docNo = prefix + Math.floor(1000 + Math.random() * 8999);
+
+      const newDoc = {
+        docNo, type, party, tin, date, desc, base, vatType, vat,
+        atc: atcCode, ewtRate, ewt, net, printCount: 1
+      };
+      client.documents.unshift(newDoc);
+
+      // Auto-post double-entry accounting lines to BIR Books
+      const accts = getCOAAccounts();
+      if (type === 'SALES_INVOICE') {
+        client.journalEntries.unshift(
+          { id: docNo, date, book: 'Sales Journal', party, memo: desc, account: accts[0], atc: 'NONE', debit: net, credit: 0 },
+          ...(ewt > 0 ? [{ id: docNo, date, book: 'Sales Journal', party, memo: `CWT Withheld (${atcCode})`, account: '1420 - Creditable Withholding Tax (CWT Asset)', atc: atcCode, debit: ewt, credit: 0 }] : []),
+          { id: docNo, date, book: 'Sales Journal', party, memo: desc, account: accts.find(a => a.startsWith('4')) || accts[accts.length - 2], atc: vatType === 'ZERO_RATED' ? 'ZERO' : (vatType === 'VATABLE' ? 'VAT12' : 'EXEMPT'), debit: 0, credit: base },
+          ...(vat > 0 ? [{ id: docNo, date, book: 'Sales Journal', party, memo: '12% Output VAT', account: '2110 - Output VAT Payable', atc: 'VAT12', debit: 0, credit: vat }] : [])
+        );
+      } else {
+        client.journalEntries.unshift(
+          { id: docNo, date, book: 'Purchase Journal', party, memo: desc, account: accts.find(a => a.startsWith('5')) || accts[2], atc: vatType === 'VATABLE' ? 'VAT12' : 'EXEMPT', debit: base, credit: 0 },
+          ...(vat > 0 ? [{ id: docNo, date, book: 'Purchase Journal', party, memo: '12% Input VAT', account: '1410 - Input VAT - Goods & Services', atc: 'VAT12', debit: vat, credit: 0 }] : []),
+          ...(ewt > 0 ? [{ id: docNo, date, book: 'Purchase Journal', party, memo: `EWT Payable (${atcCode})`, account: '2120 - Expanded Withholding Tax (EWT) Payable', atc: atcCode, debit: 0, credit: ewt }] : []),
+          { id: docNo, date, book: 'Purchase Journal', party, memo: desc, account: accts[0], atc: 'NONE', debit: 0, credit: net }
+        );
+      }
+
+      logAudit('E-Invoicing', type === 'SALES_INVOICE' ? 'ISSUE_SI' : 'RECORD_AP', docNo, `${party} | Base: ${formatPHP(base)} | CWT(${atcCode}): ${formatPHP(ewt)}`);
+      saveState();
+      renderAll();
+      showToast(`${docNo} issued & auto-posted to BIR Books with RR 6-2026 CWT line item.`, 'emerald');
+    }
+
+    function renderInvoicesTable() {
+      const client = getActiveClient();
+      const tbody = document.getElementById('invoices-table-body');
+      tbody.innerHTML = client.documents.map((doc, idx) => {
+        const isOriginal = doc.printCount <= 1;
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-3 font-mono">
+              <span class="font-bold text-slate-900 block">${doc.docNo}</span>
+              <span class="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-bold ${isOriginal ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${isOriginal ? 'ORIGINAL' : `REPRINT #${doc.printCount - 1}`}
+              </span>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold ${doc.type === 'SALES_INVOICE' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-slate-700'}">
+                ${doc.type === 'SALES_INVOICE' ? 'Sales Invoice' : 'Purchase Bill'}
+              </span>
+            </td>
+            <td class="py-3 px-3">
+              <span class="font-semibold text-slate-800 block">${doc.party}</span>
+              <span class="font-mono text-[11px] text-slate-500">TIN: ${doc.tin}</span>
+            </td>
+            <td class="py-3 px-3 text-right font-mono tabular-nums">${formatPHP(doc.base)}</td>
+            <td class="py-3 px-3 text-right font-mono tabular-nums text-slate-600">${formatPHP(doc.vat)}</td>
+            <td class="py-3 px-3 text-right font-mono tabular-nums text-rose-600">
+              ${doc.ewt > 0 ? `-${formatPHP(doc.ewt)} (${doc.atc})` : '₱0.00'}
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold tabular-nums text-slate-900">${formatPHP(doc.net)}</td>
+            <td class="py-3 px-3 text-center whitespace-nowrap space-x-1">
+              <button onclick="openDocumentPreview(${idx}, 'INVOICE')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px]">
+                <i class="fa-solid fa-eye"></i> View E-Inv
+              </button>
+              <button onclick="openDocumentPreview(${idx}, '2307')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-[11px]">
+                <i class="fa-solid fa-file-certificate"></i> Form 2307
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openDocumentPreview(docIndex, mode) {
+      const client = getActiveClient();
+      const doc = client.documents[docIndex];
+      const watermarkText = doc.printCount <= 1 ? 'ORIGINAL COPY' : `REPRINT COPY #${doc.printCount - 1}`;
+
+      document.getElementById('modal-reprint-badge').textContent = watermarkText;
+      document.getElementById('modal-reprint-badge').className = doc.printCount <= 1
+        ? 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800'
+        : 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800';
+
+      const container = document.getElementById('modal-doc-content');
+
+      if (mode === '2307') {
+        document.getElementById('modal-doc-title').textContent = `BIR Form No. 2307 — Certificate of Creditable Tax Withheld at Source`;
+        const payorName = doc.type === 'PURCHASE_BILL' ? client.name : doc.party;
+        const payorTin = doc.type === 'PURCHASE_BILL' ? client.tin : doc.tin;
+        const payeeName = doc.type === 'PURCHASE_BILL' ? doc.party : client.name;
+        const payeeTin = doc.type === 'PURCHASE_BILL' ? doc.tin : client.tin;
+
+        container.innerHTML = `
+          <div class="bir-watermark border-2 border-slate-800 p-6 rounded-xl bg-white text-xs space-y-4" data-watermark="${watermarkText}">
+            <div class="flex justify-between items-start border-b-2 border-slate-800 pb-3">
+              <div>
+                <p class="text-[10px] font-bold uppercase text-slate-500">Republic of the Philippines • Department of Finance</p>
+                <p class="text-sm font-extrabold text-slate-900">BUREAU OF INTERNAL REVENUE</p>
+                <p class="text-xs font-bold text-indigo-700 mt-0.5">BIR Form No. 2307 (Certificate of Creditable Tax Withheld at Source)</p>
+              </div>
+              <div class="text-right font-mono">
+                <p class="font-bold text-slate-900">Ref: ${doc.docNo}</p>
+                <p class="text-slate-600">Date: ${doc.date}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <div>
+                <p class="text-[10px] font-bold uppercase text-slate-400">Part I — Payee Information (Income Recipient)</p>
+                <p class="font-bold text-slate-900 text-sm mt-0.5">${payeeName}</p>
+                <p class="font-mono text-slate-600">TIN: ${payeeTin}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold uppercase text-slate-400">Part II — Payor Information (Withholding Agent)</p>
+                <p class="font-bold text-slate-900 text-sm mt-0.5">${payorName}</p>
+                <p class="font-mono text-slate-600">TIN: ${payorTin}</p>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-[10px] font-bold uppercase text-slate-500 mb-2">Part III — Details of Monthly Income Payments and Taxes Withheld</p>
+              <table class="w-full border border-slate-300 text-left">
+                <thead class="bg-slate-100 border-b border-slate-300 text-[11px]">
+                  <tr>
+                    <th class="p-2 border-r border-slate-300">Income Payment Subject to EWT</th>
+                    <th class="p-2 border-r border-slate-300">ATC</th>
+                    <th class="p-2 border-r border-slate-300 text-right">Tax Base (3rd Mo. Qtr)</th>
+                    <th class="p-2 text-right">Tax Withheld</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="p-2 border-r border-slate-300">${doc.desc}</td>
+                    <td class="p-2 border-r border-slate-300 font-mono font-bold">${doc.atc}</td>
+                    <td class="p-2 border-r border-slate-300 text-right font-mono">${formatPHP(doc.base)}</td>
+                    <td class="p-2 text-right font-mono font-bold text-indigo-700">${formatPHP(doc.ewt)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200 flex justify-between items-end text-[11px] text-slate-600">
+              <div>
+                <p>Declared under the penalties of perjury to have been made in good faith.</p>
+                <p class="font-mono text-[10px] text-slate-400 mt-1">CAS E-Signature Hash: SHA256-${btoa(doc.docNo + doc.tin).substring(0, 18)}</p>
+              </div>
+              <div class="text-center border-t border-slate-800 pt-1 px-6">
+                <p class="font-bold text-slate-900">M. DELA CRUZ, CPA</p>
+                <p>Authorized Withholding Representative</p>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        document.getElementById('modal-doc-title').textContent = `RR No. 6-2026 Compliant Electronic Invoice (${doc.docNo})`;
+        container.innerHTML = `
+          <div class="bir-watermark border-2 border-slate-800 p-6 rounded-xl bg-white text-xs space-y-4" data-watermark="${watermarkText}">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-4">
+              <div>
+                <h4 class="text-base font-extrabold text-slate-900">${client.name}</h4>
+                <p class="font-mono text-slate-600">VAT Reg TIN: ${client.tin} • ${client.rdo}</p>
+                <p class="text-[11px] text-emerald-700 font-semibold mt-0.5">BIR ORUS CAS Ack: ${client.orusNumber}</p>
+              </div>
+              <div class="text-right">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">SALES INVOICE</span>
+                <p class="font-mono font-bold text-sm text-slate-900 mt-1">${doc.docNo}</p>
+                <p class="text-slate-500">Date: ${doc.date}</p>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <p class="text-[10px] font-bold uppercase text-slate-400">Sold To / Counterparty</p>
+              <p class="font-bold text-slate-900 text-sm">${doc.party}</p>
+              <p class="font-mono text-slate-600">TIN: ${doc.tin}</p>
+            </div>
+
+            <table class="w-full border border-slate-200">
+              <thead class="bg-slate-100 border-b border-slate-200">
+                <tr>
+                  <th class="p-2.5 text-left">Item / Service Description</th>
+                  <th class="p-2.5 text-right">Amount (PHP)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="p-2.5">${doc.desc}</td>
+                  <td class="p-2.5 text-right font-mono">${formatPHP(doc.base)}</td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 text-slate-600">Add: 12% Value-Added Tax (${doc.vatType})</td>
+                  <td class="p-2.5 text-right font-mono">${formatPHP(doc.vat)}</td>
+                </tr>
+                <tr class="bg-rose-50/50">
+                  <td class="p-2.5 font-semibold text-rose-700">Less: Creditable Withholding Tax — ATC ${doc.atc} (RR No. 6-2026 Separate Line)</td>
+                  <td class="p-2.5 text-right font-mono font-semibold text-rose-700">-${formatPHP(doc.ewt)}</td>
+                </tr>
+                <tr class="bg-slate-900 text-white font-bold">
+                  <td class="p-2.5">TOTAL NET AMOUNT DUE</td>
+                  <td class="p-2.5 text-right font-mono text-sm">${formatPHP(doc.net)}</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="text-[10px] text-center text-slate-400 font-mono">
+              "THIS DOCUMENT IS VALID FOR CLAIM OF INPUT TAX" • Generated via KuwentaPH CAS ERP
+            </p>
+          </div>
+        `;
+      }
+
+      // Increment print counter per BIR CAS reprint tracking rules
+      doc.printCount += 1;
+      logAudit('E-Invoicing', 'VIEW_PRINT', doc.docNo, `Accessed ${mode} preview (${watermarkText})`);
+      saveState();
+      renderInvoicesTable();
+      renderAuditLogs();
+      document.getElementById('doc-preview-modal').classList.remove('hidden');
+    }
+
+    function triggerPrintSimulation() {
+      showToast('Print job dispatched with BIR CAS watermark verification.', 'indigo');
+      closeModal('doc-preview-modal');
+    }
+
+    // =========================================================================
+    // 8. PHILIPPINE TAX COMPLIANCE ENGINE (2550Q, 0619-E, 2551Q, SLSP/SAWT)
+    // =========================================================================
+    function renderTaxEngine() {
+      const client = getActiveClient();
+      const m = computeClientMetrics(client);
+
+      // 2550Q Card
+      document.getElementById('tax-2550q-body').innerHTML = `
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500">15A. Vatable Sales / Receipts:</span>
+          <span class="font-mono font-semibold">${formatPHP(m.vatableSales)}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500">17. Zero-Rated Sales (Sec. 108B):</span>
+          <span class="font-mono font-semibold">${formatPHP(m.zeroRatedSales)}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500">18. Exempt Sales:</span>
+          <span class="font-mono font-semibold">${formatPHP(m.exemptSales)}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100 text-indigo-700 font-semibold">
+          <span>19B. Total Output VAT (12%):</span>
+          <span class="font-mono">${formatPHP(m.outputVat)}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100 text-emerald-700 font-semibold">
+          <span>21. Less: Allowable Input VAT:</span>
+          <span class="font-mono">-${formatPHP(m.inputVat)}</span>
+        </div>
+        <div class="flex justify-between pt-2 text-sm font-extrabold text-slate-900">
+          <span>25. Net VAT Payable:</span>
+          <span class="font-mono text-indigo-700">${client.isVat ? formatPHP(m.netVatPayable) : 'N/A (Non-VAT)'}</span>
+        </div>
+      `;
+
+      // 0619-E / 1601-EQ Card
+      const ewtByAtc = {};
+      client.journalEntries.forEach(e => {
+        if (e.account.startsWith('2120') && e.credit > 0) {
+          ewtByAtc[e.atc] = (ewtByAtc[e.atc] || 0) + e.credit;
+        }
+      });
+      const atcRows = Object.entries(ewtByAtc).map(([atc, amt]) => `
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="font-mono font-semibold text-slate-700">ATC ${atc}:</span>
+          <span class="font-mono font-semibold text-rose-600">${formatPHP(amt)}</span>
+        </div>
+      `).join('') || `<p class="text-slate-400 italic py-2">No EWT payables accrued in current period.</p>`;
+
+      document.getElementById('tax-ewt-body').innerHTML = `
+        ${atcRows}
+        <div class="flex justify-between py-1 border-b border-slate-100 text-slate-600">
+          <span>CWT Certificates Available (2307):</span>
+          <span class="font-mono font-semibold text-emerald-700">${formatPHP(m.cwtAsset)}</span>
+        </div>
+        <div class="flex justify-between pt-2 text-sm font-extrabold text-slate-900">
+          <span>Total EWT Remittance Due:</span>
+          <span class="font-mono text-rose-600">${formatPHP(m.ewtPayable)}</span>
+        </div>
+      `;
+
+      // 2551Q Card
+      document.getElementById('tax-2551q-body').innerHTML = `
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500">Taxpayer Classification:</span>
+          <span class="font-semibold text-slate-800">${client.taxRegime}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500">Taxable Gross Receipts:</span>
+          <span class="font-mono font-semibold">${!client.isVat ? formatPHP(m.currentMonthRevenue) : '₱0.00'}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500">Percentage Tax Rate:</span>
+          <span class="font-mono font-semibold">3.00%</span>
+        </div>
+        <div class="flex justify-between pt-2 text-sm font-extrabold text-slate-900">
+          <span>2551Q Tax Due:</span>
+          <span class="font-mono text-emerald-700">${!client.isVat ? formatPHP(m.percentageTax) : 'Exempt (VAT Reg)'}</span>
+        </div>
+      `;
+
+      // SLSP & SAWT Relief Table
+      const slspBody = document.getElementById('slsp-table-body');
+      slspBody.innerHTML = client.documents.map(d => {
+        const sched = d.type === 'SALES_INVOICE' ? 'SLS (Sales)' : 'SLP (Purchases)';
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 px-3 font-semibold text-indigo-700">${sched}</td>
+            <td class="py-2.5 px-3 font-medium text-slate-800">${d.party}</td>
+            <td class="py-2.5 px-3 font-mono text-slate-600">${d.tin}</td>
+            <td class="py-2.5 px-3 font-mono font-bold">${d.atc}</td>
+            <td class="py-2.5 px-3 text-right font-mono">${d.vatType !== 'VATABLE' ? formatPHP(d.base) : '₱0.00'}</td>
+            <td class="py-2.5 px-3 text-right font-mono">${d.vatType === 'VATABLE' ? formatPHP(d.base) : '₱0.00'}</td>
+            <td class="py-2.5 px-3 text-right font-mono">${formatPHP(d.vat)}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-rose-600 font-semibold">${formatPHP(d.ewt)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function simulateExportDAT(fileType) {
+      const role = getCurrentRole();
+      if (!role.canApproveTax) {
+        logAudit('Access Control', 'BLOCKED_DAT_EXPORT', fileType, `Blocked ${role.roleTitle} from exporting BIR .DAT file`);
+        renderAuditLogs();
+        showToast(`Access Restricted: ${role.roleTitle} cannot generate official BIR .DAT tax files.`, 'rose');
+        return;
+      }
+      const client = getActiveClient();
+      const filename = `${client.tin.replace(/-/g, '')}_${fileType}_112026.DAT`;
+      logAudit('BIR Relief / Tax', 'EXPORT_DAT', fileType, `Generated BIR Relief/eFPS DAT file: ${filename}`);
+      renderAuditLogs();
+      showToast(`Generated BIR-validated ${filename} ready for eSubmission.`, 'emerald');
+    }
+
+    // =========================================================================
+    // 9. INDUSTRY-SPECIFIC SUB-MODULES (DYNAMIC PER CLIENT INDUSTRY)
+    // =========================================================================
+    function renderIndustryModule() {
+      const client = getActiveClient();
+      const container = document.getElementById('industry-dynamic-container');
+
+      if (client.industry === 'Retail / E-Commerce') {
+        const skus = client.industryOps?.skus || DEFAULT_STATE.clients[0].industryOps.skus;
+        const settlements = client.industryOps?.settlements || DEFAULT_STATE.clients[0].industryOps.settlements;
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold">RETAIL & E-COMMERCE MODULE</span>
+                <h2 class="text-base font-bold text-slate-900 mt-1">Marketplace Settlement & RR 16-2023 E-Marketplace 1% CWT Reconciliation</h2>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 px-3">E-Marketplace Channel</th>
+                    <th class="py-2.5 px-3 text-right">Gross GMV</th>
+                    <th class="py-2.5 px-3 text-right">Platform Fees</th>
+                    <th class="py-2.5 px-3 text-right">1% CWT (WC158)</th>
+                    <th class="py-2.5 px-3 text-right">Net Bank Remittance</th>
+                    <th class="py-2.5 px-3 text-center">Reconciliation</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${settlements.map(s => `
+                    <tr>
+                      <td class="py-3 px-3 font-semibold text-slate-900">${s.platform}</td>
+                      <td class="py-3 px-3 text-right font-mono">${formatPHP(s.gross)}</td>
+                      <td class="py-3 px-3 text-right font-mono text-slate-500">-${formatPHP(s.fees)}</td>
+                      <td class="py-3 px-3 text-right font-mono text-indigo-600">-${formatPHP(s.cwt1Pct)}</td>
+                      <td class="py-3 px-3 text-right font-mono font-bold text-emerald-700">${formatPHP(s.netPayout)}</td>
+                      <td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">${s.status}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <h3 class="text-base font-bold text-slate-900">SKU Inventory Valuation (BIR Year-End Annex)</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 px-3">SKU Code</th>
+                    <th class="py-2.5 px-3">Product Name</th>
+                    <th class="py-2.5 px-3">Primary Channel</th>
+                    <th class="py-2.5 px-3 text-right">On-Hand Qty</th>
+                    <th class="py-2.5 px-3 text-right">Unit Cost</th>
+                    <th class="py-2.5 px-3 text-right">Total Valuation</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${skus.map(item => `
+                    <tr>
+                      <td class="py-3 px-3 font-mono font-semibold text-indigo-600">${item.sku}</td>
+                      <td class="py-3 px-3 font-medium text-slate-800">${item.name}</td>
+                      <td class="py-3 px-3 text-slate-600">${item.channel}</td>
+                      <td class="py-3 px-3 text-right font-mono">${item.stock}</td>
+                      <td class="py-3 px-3 text-right font-mono">${formatPHP(item.unitCost)}</td>
+                      <td class="py-3 px-3 text-right font-mono font-bold">${formatPHP(item.stock * item.unitCost)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (client.industry === 'Construction / Real Estate') {
+        const projects = client.industryOps?.projects || DEFAULT_STATE.clients[1].industryOps.projects;
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-bold">CONSTRUCTION & REAL ESTATE MODULE</span>
+              <h2 class="text-base font-bold text-slate-900 mt-1">Project Costing, Progress Billing & Subcontractor EWT (WC160 2%) Tracker</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 px-3">Project Code</th>
+                    <th class="py-2.5 px-3">Project Title</th>
+                    <th class="py-2.5 px-3 text-right">Contract Price</th>
+                    <th class="py-2.5 px-3 text-center">POC % Billed</th>
+                    <th class="py-2.5 px-3 text-right">10% Retention Receivable</th>
+                    <th class="py-2.5 px-3 text-right">Subcon EWT Withheld</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${projects.map(p => `
+                    <tr>
+                      <td class="py-3 px-3 font-mono font-bold text-indigo-700">${p.code}</td>
+                      <td class="py-3 px-3 font-semibold text-slate-900">${p.name}</td>
+                      <td class="py-3 px-3 text-right font-mono">${formatPHP(p.contractPrice)}</td>
+                      <td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold">${p.billedPct}</span></td>
+                      <td class="py-3 px-3 text-right font-mono text-amber-700 font-semibold">${formatPHP(p.retentionHeld)}</td>
+                      <td class="py-3 px-3 text-right font-mono text-rose-600 font-semibold">${formatPHP(p.subconEwt)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (client.industry === 'Food & Hospitality') {
+        const branches = client.industryOps?.branches || DEFAULT_STATE.clients[2].industryOps.branches;
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">HOSPITALITY & F&B MODULE</span>
+              <h2 class="text-base font-bold text-slate-900 mt-1">BIR POS Z-Reading Batch Summary & Senior/PWD VAT-Exempt Discount Tracker</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 px-3">Branch Location</th>
+                    <th class="py-2.5 px-3">Latest POS Z-Read</th>
+                    <th class="py-2.5 px-3 text-right">Monthly Gross Sales</th>
+                    <th class="py-2.5 px-3 text-center">Food Cost %</th>
+                    <th class="py-2.5 px-3 text-right">SC / PWD 20% Discount</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${branches.map(b => `
+                    <tr>
+                      <td class="py-3 px-3 font-semibold text-slate-900">${b.branch}</td>
+                      <td class="py-3 px-3 font-mono text-indigo-600 font-bold">${b.posZRead}</td>
+                      <td class="py-3 px-3 text-right font-mono font-bold">${formatPHP(b.grossSales)}</td>
+                      <td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">${b.foodCostPct}</span></td>
+                      <td class="py-3 px-3 text-right font-mono text-slate-600">${formatPHP(b.seniorPwdDisc)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (client.industry === 'IT / BPO Services') {
+        const retainers = client.industryOps?.retainers || DEFAULT_STATE.clients[3].industryOps.retainers;
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold">IT / BPO EXPORT SERVICES MODULE</span>
+              <h2 class="text-base font-bold text-slate-900 mt-1">Cross-Border Export Retainers & Zero-Rated VAT Substantiation (Sec. 108(B)(2))</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 px-3">Foreign Principal</th>
+                    <th class="py-2.5 px-3 text-center">Dedicated FTEs</th>
+                    <th class="py-2.5 px-3 text-right">Contract Retainer (USD)</th>
+                    <th class="py-2.5 px-3 text-right">BSP Forex Equiv (PHP)</th>
+                    <th class="py-2.5 px-3">BIR VAT Classification</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${retainers.map(r => `
+                    <tr>
+                      <td class="py-3 px-3 font-semibold text-slate-900">${r.client}</td>
+                      <td class="py-3 px-3 text-center font-mono">${r.fteCount}</td>
+                      <td class="py-3 px-3 text-right font-mono">${r.monthlyUsd}</td>
+                      <td class="py-3 px-3 text-right font-mono font-bold text-slate-900">${formatPHP(r.phpEquiv)}</td>
+                      <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">${r.vatClass}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else {
+        const hmoClaims = client.industryOps?.hmoClaims || DEFAULT_STATE.clients[4].industryOps.hmoClaims;
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-xs font-bold">HEALTHCARE & MEDICAL CLINIC MODULE</span>
+              <h2 class="text-base font-bold text-slate-900 mt-1">HMO Receivables, LOA Clearing & Doctor Professional Fee EWT (WI010) Split</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 px-3">Payor / HMO Provider</th>
+                    <th class="py-2.5 px-3 text-right">Gross Consultations</th>
+                    <th class="py-2.5 px-3 text-right">CWT Withheld (WI010)</th>
+                    <th class="py-2.5 px-3 text-right">Net Cash Remitted</th>
+                    <th class="py-2.5 px-3 text-center">Form 2307 Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${hmoClaims.map(h => `
+                    <tr>
+                      <td class="py-3 px-3 font-semibold text-slate-900">${h.hmo}</td>
+                      <td class="py-3 px-3 text-right font-mono">${formatPHP(h.billed)}</td>
+                      <td class="py-3 px-3 text-right font-mono text-rose-600">-${formatPHP(h.cwt10Pct)}</td>
+                      <td class="py-3 px-3 text-right font-mono font-bold text-emerald-700">${formatPHP(h.netCollected)}</td>
+                      <td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold">${h.status}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // 10. BIR CAS / CBA AUDIT TRAIL & ANNEX C-1 EXPORT
+    // =========================================================================
+    function renderAuditLogs() {
+      const tbody = document.getElementById('audit-table-body');
+      tbody.innerHTML = appState.auditLogs.map(log => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${log.timestamp}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800 whitespace-nowrap">${log.user}</td>
+          <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${log.tin}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700">${log.module}</span></td>
+          <td class="py-2.5 px-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold">${log.action}</span></td>
+          <td class="py-2.5 px-3 font-bold text-slate-900 whitespace-nowrap">${log.ref}</td>
+          <td class="py-2.5 px-3 text-slate-600 font-sans">${log.details}</td>
+        </tr>
+      `).join('');
+    }
+
+    function downloadCASAnnexSample() {
+      const client = getActiveClient();
+      const content = [
+        '========================================================================',
+        'BUREAU OF INTERNAL REVENUE (BIR) - CAS / CBA ANNEX C-1 SYSTEM SUMMARY',
+        '========================================================================',
+        `Taxpayer Name   : ${client.name}`,
+        `BIR TIN         : ${client.tin}`,
+        `RDO District    : ${client.rdo}`,
+        `ORUS Ack Number : ${client.orusNumber}`,
+        `Software Name   : KuwentaPH Enterprise CPA ERP v2026.4`,
+        `Compliance      : RMO No. 9-2021, RR No. 6-2026, RMC No. 98-2026`,
+        '------------------------------------------------------------------------',
+        'REGISTERED COMPUTERIZED BOOKS OF ACCOUNTS:',
+        '1. General Journal (Sequential JV-YYYY-NNN)',
+        '2. General Ledger (Real-Time Double Entry)',
+        '3. Cash Receipts Book & Cash Disbursements Book',
+        '4. Sales Journal & Purchase Journal (with ATC & VAT segregation)',
+        '------------------------------------------------------------------------',
+        'RECENT IMMUTABLE AUDIT TRAIL ENTRIES:',
+        ...appState.auditLogs.slice(0, 10).map(l => `[${l.timestamp}] ${l.user} | ${l.action} | ${l.ref} | ${l.details}`)
+      ].join('\n');
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BIR_CAS_Annex_C1_${client.tin.replace(/-/g, '')}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      logAudit('BIR CAS', 'EXPORT_ANNEX', 'ANNEX-C1', 'Downloaded BIR CAS Annex C-1 Compliance Summary');
+      renderAuditLogs();
+      showToast('Downloaded BIR CAS Annex C-1 & Audit Trail package.', 'emerald');
+    }
+
+    // =========================================================================
+    // 11. NEW CLIENT ENTITY ONBOARDING MODAL
+    // =========================================================================
+    function openNewClientModal() {
+      const role = getCurrentRole();
+      if (!role.canOnboardClient) {
+        logAudit('Access Control', 'BLOCKED_ONBOARD', 'NEW_CLIENT', `Blocked ${role.roleTitle} from onboarding new client entity`);
+        renderAuditLogs();
+        showToast(`Access Restricted: Only Managing Partners can onboard new client entities.`, 'rose');
+        return;
+      }
+      document.getElementById('new-client-modal').classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function createNewClientEntity(e) {
+      e.preventDefault();
+      const name = document.getElementById('nc-name').value;
+      const tin = document.getElementById('nc-tin').value;
+      const rdo = document.getElementById('nc-rdo').value;
+      const industry = document.getElementById('nc-industry').value;
+      const taxRegime = document.getElementById('nc-regime').value;
+      const isVat = !taxRegime.startsWith('Non-VAT');
+
+      const newId = 'client-' + Date.now();
+      const rdoShort = 'RDO ' + (rdo.split('-')[0].trim() || '000');
+      const accts = INDUSTRY_COA[industry] || INDUSTRY_COA['Retail / E-Commerce'];
+
+      const newClient = {
+        id: newId,
+        name,
+        tin,
+        rdo,
+        rdoShort,
+        industry,
+        taxRegime,
+        isVat,
+        orusNumber: 'ORUS-2026-' + Math.floor(10000 + Math.random() * 89999),
+        monthlyTrend: {
+          labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+          revenue: [350000, 410000, 460000, 520000, 590000, 650000],
+          expenses: [210000, 240000, 265000, 295000, 330000, 360000]
+        },
+        calendar: [
+          { form: isVat ? 'BIR Form 2550Q' : 'BIR Form 2551Q', title: isVat ? 'Quarterly VAT Return' : 'Quarterly Percentage Tax', due: 'Jan 25, 2027', status: 'Pending' },
+          { form: 'BIR Form 0619-E', title: 'Monthly Expanded Withholding Tax', due: 'Dec 10, 2026', status: 'Pending' }
+        ],
+        journalEntries: [
+          { id: 'JV-2026-001', date: '2026-11-21', book: 'Cash Receipts Book', party: 'Initial Capital / Opening Balance', memo: 'Opening Balance & Initial Revenue', account: accts[0], atc: 'NONE', debit: 560000, credit: 0 },
+          { id: 'JV-2026-001', date: '2026-11-21', book: 'Cash Receipts Book', party: 'Initial Capital / Opening Balance', memo: 'Opening Balance & Initial Revenue', account: accts.find(a => a.startsWith('4')) || accts[accts.length - 2], atc: isVat ? 'VAT12' : 'EXEMPT', debit: 0, credit: 500000 },
+          ...(isVat ? [{ id: 'JV-2026-001', date: '2026-11-21', book: 'Cash Receipts Book', party: 'Initial Capital / Opening Balance', memo: '12% Output VAT', account: '2110 - Output VAT Payable', atc: 'VAT12', debit: 0, credit: 60000 }] : [])
+        ],
+        documents: []
+      };
+
+      appState.clients.push(newClient);
+      appState.activeClientId = newId;
+      logAudit('Practice Admin', 'ONBOARD_CLIENT', newId, `Onboarded new client entity: ${name} (${tin})`);
+      saveState();
+      closeModal('new-client-modal');
+      resetJournalLines();
+      renderAll();
+      showToast(`Onboarded "${name}" and provisioned ${industry} Chart of Accounts!`, 'emerald');
+    }
+
+    // =========================================================================
+    // 12. MASTER RENDER INITIALIZATION
+    // =========================================================================
+    function renderAll() {
+      renderHeaderAndSwitcher();
+      renderDashboard();
+      renderBooksTable();
+      renderInvoicesTable();
+      renderTaxEngine();
+      renderIndustryModule();
+      renderAuditLogs();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const openBtn = document.getElementById('open-sidebar-btn');
+      const closeBtn = document.getElementById('close-sidebar-btn');
+      const sidebar = document.getElementById('sidebar');
+      if (openBtn && sidebar) openBtn.addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
+      if (closeBtn && sidebar) closeBtn.addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
+
+      resetJournalLines();
+      recalcInvoicePreview();
+      applyRoleRestrictions();
+      renderAll();
+    });
+  </script>
+</body>
+</html>
